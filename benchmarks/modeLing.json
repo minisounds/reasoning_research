@@ -1,0 +1,1534 @@
+{
+    "problems": [
+        {
+            "name": "Abun",
+            "type": [
+                "POSS"
+            ],
+            "difficulty": 5,
+            "data": [
+                "Abun: gap sye bi gan\nEnglish: big rat's offspring",
+                "Abun: ji bi ngwe\nEnglish: my garden",
+                "Abun: ji syim\nEnglish: my arm",
+                "Abun: ndar sye gwes\nEnglish: big dog's leg",
+                "Abun: gap bi ngwe\nEnglish: rat's garden"
+            ],
+            "questions": [
+                "Abun: ji gwes",
+                "Abun: ji bi gan",
+                "English: my big garden",
+                "English: dog's offspring"
+            ],
+            "answers": [
+                "English: my leg",
+                "English: my offspring",
+                "Abun: ji bi ngwe sye",
+                "Abun: ndar bi gan"
+            ]
+        },
+        {
+            "name": "Ainu",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 5,
+            "data": [
+                "Ainu: Numan hambaga ku=e.\nEnglish:Yesterday I ate a hamburger.",
+                "Ainu: Ku=kor acapo pirka nispa ne.\nEnglish:My uncle is a good chief.",
+                "Ainu: Husko cise e=kor.\nEnglish:You have an old house.",
+                "Ainu: E=pake sonno poro.\nEnglish:Your head is very big.",
+                "Ainu: Ukran ku=kor hapo kimunkamuy nukar.\nEnglish:Last night my mother saw a bear.",
+                "Ainu: Tan pone e=oterke.\nEnglish:You step on this bone.",
+                "Ainu: Ku=cikir tanne.\nEnglish:My leg is long.",
+                "Ainu: Sita ermun kuykuy.\nEnglish:The dog bites a mouse.",
+                "Ainu: Wakka wa cep terke.\nEnglish:The fish jumps from the water.",
+                "Ainu: Hoska=numan Nupurpet en ku=oowet.\nEnglish:Two days ago I returned to Noboribetsu."
+            ],
+            "questions": [
+                "Ainu: Tan kimunkamuy poro cep e.",
+                "Ainu: E=kor hapo sonno husko.",
+                "Ainu: Ukran kangaruu ku=cikir kuykuy.",
+                "Ainu: E=kuykuy pone sonno husko.",
+                "English: The mouse that I saw ate a big hamburger.",
+                "English: The old dog has a good head.",
+                "English: The big bear is a mother.",
+                "English: Two days ago my uncle returned from the water to the old house."
+            ],
+            "answers": [
+                "English: This bear ate a big fish.",
+                "English: Your mother is very old.",
+                "English: Last night the kangaroo bit my leg.",
+                "English: The bone that you bit is very old.",
+                "Ainu: Ku=nukar ermun poro hambaga e.",
+                "Ainu: Husko sita pirka pake kor.",
+                "Ainu: Poro kimunkamuy hapo ne.",
+                "Ainu: Hoska=numan wakka wa husko cise en ku=kor acapo oowet."
+            ]
+        },
+        {
+            "name": "Ayutla Mixe",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 4,
+            "data": [
+                "Mixe: Ëjts nexp.\nEnglish: I see.",
+                "Mixe: Mejts mtunp.\nEnglish: You work.",
+                "Mixe: Juan yë'ë yexyejtpy. \nEnglish: Juan watches him.",
+                "Mixe: Yë'ë yë' uk yexpy.\nEnglish: He sees the dog.",
+                "Mixe: Ëjts yë' maxu'unk nexyejtpy.\nEnglish: I watch the baby."
+            ],
+            "questions": [
+                "Mixe: Yë' maxu'unk yexp.",
+                "Mixe: Mejts Juan mtunpy.",
+                "English: I work for him.",
+                "English: The baby watches the dog."
+            ],
+            "answers": [
+                "English: The baby sees.",
+                "English: You work for Juan.",
+                "Seri: Ëjts yë'ë nexpy.",
+                "Seri: Yë' maxu'unk yë' uk yexpy."
+            ]
+        },
+        {
+            "name": "Bangime",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 3,
+            "data": [
+                "English: I see you.\nBangime: myǔ àw shura",
+                "English: We see.\nBangime: nnε nεshura",
+                "English: We hear you.\nBangime: nnε àw nεno",
+                "English: You fly.\nBangime: àw pindo",
+                "English: The person hits the dog.\nBangime: yiwεrε kurε dara",
+                "English: The dog drinks the water.\nBangime: kurε Vyε nnyε",
+                "English: The fish drinks the blood.\nBangime: ŋç yii nnyε",
+                "English: We bite the bone.\nBangime: nnε nççrε nεtaŋwa",
+                "English: The fish sleeps.\nBangime: ŋç do"
+            ],
+            "questions": [
+                "English: I see",
+                "English: The person hits you",
+                "English: We fly",
+                "Bangime: ŋç nççrε shura",
+                "Bangime: nnε nεdo"
+            ],
+            "answers": [
+                "Bangime: myǔ shura",
+                "Bangime: yiwεrε àw dara",
+                "Bangime: nnε nεpindo",
+                "English: The fish sees the bone",
+                "English: We sleep"
+            ]
+        },
+        {
+            "name": "Bangime 2",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 1,
+            "data": [
+                "Bangime: kaw jìná \nEnglish: He swims.",
+                "Bangime: àw ndyá\nEnglish: You eat.",
+                "Bangime: kurε do\nEnglish: The dog sleeps.",
+                "Bangime: kurε jìná\nEnglish: The dog swims.",
+                "Bangime: myǔ wçrε\nEnglish: I walk.",
+                "Bangime: dçrç pindo\nEnglish: The bird flies.",
+                "Bangime: dçrç wçrε\nEnglish: The bird walks."
+            ],
+            "questions": [
+                "English: You fly",
+                "English: He sleeps",
+                "Bangime: myǔ jìná",
+                "Bangime: dçrç ndyá"
+            ],
+            "answers": [
+                "Bangime: àw pindo",
+                "Bangime: kaw do",
+                "English: I swim",
+                "English: The bird eats"
+            ]
+        },
+        {
+            "name": "Bangime 3",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 4,
+            "data": [
+                "English: I see you.\nBangime: myǔ àw shura",
+                "English: We hear you.\nBangime: nnε àw nεno",
+                "English: The person hits me\nBangime: yiwεrε myǔ dara",
+                "English: The dog drinks the water\nBangime: kurε Vyε nnyε",
+                "English: The fish drinks the blood\nBangime: ŋç yii nnyε",
+                "English: We bite the bone\nBangime: nnε nççrε nεtaŋwa",
+                "English: We hit the bird\nBangime: nnε dçrç nεdara"
+            ],
+            "questions": [
+                "English: The person hits you",
+                "English: We hear the bird",
+                "English: The bird bites you",
+                "Bangime: ŋç nççrε shura",
+                "Bangime: yiwεrε Vyε no"
+            ],
+            "answers": [
+                "Bangime: yiwεrε àw dara",
+                "Bangime: nnε dçrç nεno",
+                "Bangime: dçrç àw taŋwa",
+                "English: The fish sees the bone",
+                "English: The person hears the water"
+            ]
+        },
+        {
+            "name": "Bangime 4",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 2,
+            "data": [
+                "English: We see you.\nBangime: nnε àw nεshura",
+                "English: I hear you.\nBangime: myǔ àw no",
+                "English: I see you.\nBangime: myǔ àw shura",
+                "English: We hear you.\nBangime: nnε àw nεno",
+                "English: The person hits me\nBangime: yiwεrε myǔ dara",
+                "English: The dog drinks the water.\nBangime: kurε Vyε nnyε",
+                "English: The fish drinks the blood.\nBangime: ŋç yii nnyε",
+                "English: We bite the bone.\nBangime: nnε nççrε nεtaŋwa",
+                "English: We hit the bird.\nBangime: nnε dçrç nεdara"
+            ],
+            "questions": [
+                "English: The person hits you",
+                "English: We hear the bird",
+                "English: The bird bites you",
+                "Bangime: ŋç nççrε shura",
+                "Bangime: yiwεrε Vyε no\n"
+            ],
+            "answers": [
+                "Bangime: yiwεrε àw dara",
+                "Bangime: nnε dçrç nεnonnε",
+                "Bangime: dçrç àw taŋwa",
+                "English: The fish sees the bone",
+                "English: The person hears the water"
+            ]
+        },
+        {
+            "name": "Bangime 5",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 3,
+            "data": [
+                "English: I see you.\nBangime: myǔ àw shura",
+                "English: We see.\nBangime: nnε nεshura",
+                "English: We hear you.\nBangime: nnε àw nεno",
+                "English: You fly.\nBangime: àw pindo",
+                "English: The person hits the dog.\nBangime: yiwεrε kurε dara",
+                "English: The dog drinks the water.\nBangime: kurε Vyε nnyε",
+                "English: The fish drinks the blood.\nBangime: ŋç yii nnyε",
+                "English: We bite the bone.\nBangime: nnε nççrε nεtaŋwa",
+                "English: The fish sleeps.\nBangime: ŋç do",
+                "English: We swim.\nBangime: nnε nεjìná",
+                "English: The bird flies.\nBangime: dçrç pindo"
+            ],
+            "questions": [
+                "English: The fish swims",
+                "English: The person hits you",
+                "English: We fly",
+                "Bangime: ŋç nççrε shura",
+                "Bangime: nnε nεdo"
+            ],
+            "answers": [
+                "Bangime: ŋç jìná",
+                "Bangime: yiwεrε àw dara",
+                "Bangime: nnε nεpindo",
+                "English: The fish sees the bone",
+                "English: We sleep"
+            ]
+        },
+        {
+            "name": "Bangime 6",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 3,
+            "data": [
+                "English: one dog\nBangime: kurε tiri",
+                "English: three houses\nBangime: ko tar",
+                "English: two children\nBangime: yaamε yinu",
+                "English: three friends\nBangime: mpa tar",
+                "English: seven houses\nBangime: ko kiye",
+                "English: five beds\nBangime: tãwa nundi"
+            ],
+            "questions": [
+                "English: one friend",
+                "English: five dogs",
+                "English: two beds",
+                "Bangime: mpa kiye",
+                "Bangime: yaamε tiri",
+                "Bangime: ko nundi"
+            ],
+            "answers": [
+                "Bangime: mpa tiri",
+                "Bangime: kurε nundi",
+                "Bangime: tãwa yinu",
+                "English: seven friends",
+                "English: one child",
+                "English: five houses"
+            ]
+        },
+        {
+            "name": "Bangime 7",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 4,
+            "data": [
+                "English: good food\nBangime: jyεkε de",
+                "English: good fish\nBangime: ŋç de",
+                "English: cold house\nBangime: ko dimmo",
+                "English: bad food\nBangime: jyεkε begaũ",
+                "English: bad house\nBangime: ko begaũ",
+                "English: big land\nBangime: gwyε kanyoro"
+            ],
+            "questions": [
+                "English: big house",
+                "English: cold fish",
+                "English: bad food",
+                "Bangime: ko de",
+                "Bangime: gwyε dimmo",
+                "Bangime: ŋç kanyoro"
+            ],
+            "answers": [
+                "Bangime: ko kanyoro",
+                "Bangime: ŋç dimmo",
+                "Bangime: jyεkε begaũ",
+                "English: good house",
+                "English: cold land",
+                "English: big fish"
+            ]
+        },
+        {
+            "name": "Chimalapa Zoque",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 5,
+            "data": [
+                "Chimalapa Zoque: ʔokmaŋpa haʔčukkə\nEnglish:They are beginning to go into debt.",
+                "Chimalapa Zoque: cəkhae ʔum ʔiššə\nEnglish: Don't see the witchcraft.",
+                "Chimalapa Zoque: šiššəm poŋpa\nEnglish: You are burning the meat.",
+                "Chimalapa Zoque: nə yay močukkə\nEnglish: They didn't mix the water.",
+                "Chimalapa Zoque: pən minpay šemhayyám yomáʔ\nEnglish: The man is coming to play (music) for the woman now.",
+                "Chimalapa Zoque: ya mi yakhacə\nEnglish: He/she is not making you go into debt.",
+                "Chimalapa Zoque: ʔokmawə də wittammám\nEnglish: Let's begin to walk now.",
+                "Chimalapa Zoque: hopowe ʔun cəktammə\nEnglish: Let's not make the fire.",
+                "Chimalapa Zoque: yomá təʔʔoyyə\nEnglish: The woman wanted.",
+                "Chimalapa Zoque: nəkkən hoʔištame totoʔ\nEnglish: I went to examine the book.",
+                "Chimalapa Zoque: ʔəm ʔectampa\nEnglish: You all are dancing.",
+                "Chimalapa Zoque: nə yan hea\nEnglish: I am not stirring the water..",
+                "Chimalapa Zoque: huki šiŋpám\nEnglish: The cigarette is swelling now.",
+                "Chimalapa Zoque: yədəm motaʔ\nEnglish: Mix this.",
+                "Chimalapa Zoque: nəm hoʔukəʔ\nEnglish: Drink all of the water (to the last drop).",
+                "Chimalapa Zoque: šiš puʔccəmmə\nEnglish: The meat was rotted.",
+                "Chimalapa Zoque: də yakkəššodammə\nEnglish: He/she fed us.",
+                "Chimalapa Zoque: minnəy heyšuki šiš\nEnglish: They came to stir the meat."
+            ],
+            "questions": [
+                "Chimalapa Zoque: šiwi",
+                "Chimalapa Zoque: minpam poŋŋodammə",
+                "Chimalapa Zoque: yay ʔečukə",
+                "Chimalapa Zoque: nəkpay kəššukkə šiš",
+                "Chimalapa Zoque: ʔəy yakkiššoba",
+                "Chimalapa Zoque: yam withayyə",
+                "English: mold",
+                "English: The musician is eating now.",
+                "English: The book is being burned.",
+                "English: Let's devour the meat.",
+                "English: They aren't walking there.",
+                "English: We are going to want the water."
+            ],
+            "answers": [
+                "English: swelling",
+                "English: You all are beginning to burn.",
+                "English: They are not dancing.",
+                "English: They are going to eat the meat.",
+                "English: He/she is making him/her see.",
+                "English: You didn't walk for him/her.",
+                "Chimalapa Zoque: puci",
+                "Chimalapa Zoque: šeme kəššobám",
+                "Chimalapa Zoque: toto poŋŋəmpa",
+                "Chimalapa Zoque: šiššən hokəštaməʔ",
+                "Chimalapa Zoque: gahi ya wičukə",
+                "Chimalapa Zoque: nəkpan tətammə nəʔ"
+            ]
+        },
+        {
+            "name": "Dogon",
+            "type": [
+                "POSS"
+            ],
+            "difficulty": 3,
+            "data": [
+                "Dogon: sáydù ìlò\nEnglish: Seydou's house",
+                "Dogon: àlá-ɔ̀ŋù-nú nènù\nEnglish: the village chief's dog",
+                "Dogon: ú nénù\nEnglish: your dog",
+                "Dogon: í ílò\nEnglish: our house"
+            ],
+            "questions": [
+                "Dogon: àlá-ɔ̀ŋù-nú ìlò",
+                "Dogon: í nénù",
+                "English: Seydou's dog",
+                "English: your house"
+            ],
+            "answers": [
+                "English: the village chief's house",
+                "English: our dog",
+                "Dogon: sáydù nènù",
+                "Dogon: ú íló"
+            ]
+        },
+        {
+            "name": "Dogon 2",
+            "type": [
+                "POSS"
+            ],
+            "difficulty": 4,
+            "data": [
+                "Dogon: à-nú dòlkì\nEnglish: a man's boubou",
+                "Dogon: à-nù séw dòlkì\nEnglish: a fat man's boubou",
+                "Dogon: ìsò ɔ̀rú tòw\nEnglish: a wet earth's sowing",
+                "Dogon: à-nù ŋú ílò\nEnglish: this man's house",
+                "Dogon: à-nù kúnú ílò\nEnglish: the man's house"
+            ],
+            "questions": [
+                "Dogon: ìsò ŋú tów",
+                "Dogon: à-nù séw kúnú dólkì",
+                "English: a man's house",
+                "English: this man's earth"
+            ],
+            "answers": [
+                "English: this earth's sowing",
+                "English: the fat man's boubou",
+                "Dogon: à-nú ìlò",
+                "Dogon: à-nù ŋú ísò"
+            ]
+        },
+        {
+            "name": "Engenni",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 3,
+            "data": [
+                "English: I see you.\nEngenni: mi moni wo",
+                "English: We see.\nEngenni: eni moni",
+                "English: We hear you.\nEngenni: eni syiene wo",
+                "English: You fly.\nEngenni: bhu fyani",
+                "English: The person hits the dog.\nEngenni: edei nu abhwa",
+                "English: The dog drinks the water.\nEngenni: abhwa dha amini",
+                "English: The fish drinks the blood.\nEngenni: eseni dha abura",
+                "English: We eat the bone.\nEngenni: eni dhi ubhwo",
+                "English: The fish sleeps.\nEngenni: eseni mise"
+            ],
+            "questions": [
+                "English: I see.",
+                "English: The person hits you.",
+                "English: We fly.",
+                "Engenni: eseni moni ubhwo",
+                "Engenni: eni mise"
+            ],
+            "answers": [
+                "Engenni: mi moni",
+                "Engenni: edei nu wo",
+                "Engenni: eni fyani",
+                "English: The fish sees the bone.",
+                "English: We sleep."
+            ]
+        },
+        {
+            "name": "Engenni 2",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 2,
+            "data": [
+                "Engenni: eni dhi\nEnglish: We eat.",
+                "Engenni: bhu dhi\nEnglish: You eat.",
+                "Engenni: abhwa mise\nEnglish: The dog sleeps.",
+                "Engenni: abhwa dhi\nEnglish: The dog eats.",
+                "Engenni: mi bidha\nEnglish: I walk.",
+                "Engenni: afeni fyani\nEnglish: The bird flies.",
+                "Engenni: afeni bidha\nEnglish: The bird walks."
+            ],
+            "questions": [
+                "English: You fly.",
+                "English: We sleep.",
+                "Engenni: mi mise",
+                "Engenni: afeni dhi"
+            ],
+            "answers": [
+                "Engenni: bhu fyani",
+                "Engenni: eni mise",
+                "English: I sleep.",
+                "English: The bird eats."
+            ]
+        },
+        {
+            "name": "Engenni 3",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 3,
+            "data": [
+                "English: I see you.\nEngenni: mi moni wo",
+                "English: We hear you.\nEngenni: eni syiene wo",
+                "English: The person hits the dog.\nEngenni: edei nu abhwa",
+                "English: The dog drinks the water.\nEngenni: abhwa dha amini",
+                "English: The fish drinks the blood.\nEngenni: eseni dha abura",
+                "English: We eat the bone.\nEngenni: eni dhi ubhwo",
+                "English: We hit the bird.\nEngenni: eni nu afeni"
+            ],
+            "questions": [
+                "English: The person hits you.",
+                "English: We hear the bird.",
+                "English: The bird eats you.",
+                "Engenni: eseni moni ubhwo",
+                "Engenni: edei syiene amini"
+            ],
+            "answers": [
+                "Engenni: edei nu wo",
+                "Engenni: eni syiene afeni",
+                "Engenni: afeni dhi wo",
+                "English: The fish sees the bone.",
+                "English: The person hears the water."
+            ]
+        },
+        {
+            "name": "Engenni 4",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 2,
+            "data": [
+                "English: We see you.\nEngenni: eni moni wo",
+                "English: I hear you.\nEngenni: mi syiene wo",
+                "English: I see you.\nEngenni: mi moni wo",
+                "English: We hear you.\nEngenni: eni syiene wo",
+                "English: The person hits the dog.\nEngenni: edei nu abhwa",
+                "English: The dog drinks the water.\nEngenni: abhwa dha amini",
+                "English: The fish drinks the blood.\nEngenni: eseni dha abura",
+                "English: We eat the bone.\nEngenni: eni dhi ubhwo",
+                "English: We hit the bird.\nEngenni: eni nu afeni"
+            ],
+            "questions": [
+                "English: The person hits you.",
+                "English: We hear the bird.",
+                "English: The bird eats you.",
+                "Engenni: eseni moni ubhwo",
+                "Engenni: edei syiene amini"
+            ],
+            "answers": [
+                "Engenni: edei nu wo",
+                "Engenni: eni syiene afeni",
+                "Engenni: afeni dhi wo",
+                "English: The fish sees the bone.",
+                "English: The person hears the water."
+            ]
+        },
+        {
+            "name": "Engenni 5",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 3,
+            "data": [
+                "English: We eat.\nEngenni: eni dhi",
+                "English: I see you.\nEngenni: mi moni wo",
+                "English: We see.\nEngenni: eni moni",
+                "English: We hear you.\nEngenni: eni syiene wo",
+                "English: You fly.\nEngenni: bhu fyani",
+                "English: The person hits the dog.\nEngenni: edei nu abhwa",
+                "English: The dog drinks the water.\nEngenni: abhwa dha amini",
+                "English: The fish drinks the blood.\nEngenni: eseni dha abura",
+                "English: We eat the bone.\nEngenni: eni dhi ubhwo",
+                "English: The bird flies.\nEngenni: afeni fyani",
+                "English: The fish sleeps.\nEngenni: eseni mise"
+            ],
+            "questions": [
+                "English: The fish eats.",
+                "English: I see.",
+                "English: The person hits you.",
+                "English: We fly.",
+                "Engenni: eseni moni ubhwo",
+                "Engenni: eni mise"
+            ],
+            "answers": [
+                "Engenni: eseni dhi",
+                "Engenni: mi moni",
+                "Engenni: edei nu wo",
+                "Engenni: eni fyani",
+                "English: The fish sees the bone.",
+                "English: We sleep."
+            ]
+        },
+        {
+            "name": "Guugu Yimithir",
+            "type": [
+                "SEM"
+            ],
+            "difficulty": 5,
+            "data": [
+                "Guugu Yimithir: guwa\nEnglish: west",
+                "Guugu Yimithir: walu guwagugu\nEnglish: exactly on the west side",
+                "Guugu Yimithir: nagaalmunganh\nEnglish: originating from an eastern direction",
+                "Guugu Yimithir: gungganun\nEnglish: from a northern point",
+                "Guugu Yimithir: jibaalmun\nEnglish: from a southern direction",
+                "Guugu Yimithir: jibaalu\nEnglish: after a southern point",
+                "Guugu Yimithir: nagaargu\nEnglish: exactly to an eastern point",
+                "Guugu Yimithir: guwaguwa\nEnglish: a little west",
+                "Guugu Yimithir: jibanun\nEnglish: from a southern point",
+                "Guugu Yimithir: guwagu\nEnglish: exactly west",
+                "Guugu Yimithir: gunggaalu\nEnglish: after a northern point",
+                "Guugu Yimithir: naganun\nEnglish: from an eastern point",
+                "Guugu Yimithir: gunggaalmunganh\nEnglish: originating from a northern direction"
+            ],
+            "questions": [
+                "Guugu Yimithir: gunggaalmu",
+                "Guugu Yimithir: jibaargu",
+                "Guugu Yimithir: guwanunganhgu",
+                "Guugu Yimithir: walu nagana",
+                "Guugu Yimithir: naganaga",
+                "English: from a western direction",
+                "English: east",
+                "English: exactly after an eastern point",
+                "English: originating from a southern point",
+                "English: to a western point"
+            ],
+            "answers": [
+                "English: from a northern direction",
+                "English: exactly to a southern point",
+                "English: originating exactly from a western point",
+                "English: on the east side",
+                "English: a little east",
+                "Guugu Yimithir: guwaalmun",
+                "Guugu Yimithir: naga",
+                "Guugu Yimithir: nagaalugu",
+                "Guugu Yimithir: jibanunganh",
+                "Guugu Yimithir: guwaar"
+            ]
+        },
+        {
+            "name": "Kalam",
+            "type": [
+                "SEM"
+            ],
+            "difficulty": 5,
+            "data": [
+                "Kalam: ag ask\nEnglish: refuse",
+                "Kalam: ag tk\nEnglish: interrupt",
+                "Kalam: ag weg\nEnglish: say secretly",
+                "Kalam: am am am am nŋ\nEnglish: walk very long and see",
+                "Kalam: am d ap\nEnglish: go, take and return (bring)",
+                "Kalam: ask\nEnglish: reject (avoid)",
+                "Kalam: kamiket am\nEnglish: sneak (walk stealthily)",
+                "Kalam: kamiket d\nEnglish: take stealthily",
+                "Kalam: kasek yib ñ\nEnglish: eat very quickly",
+                "Kalam: kasek ad\nEnglish: cook quickly",
+                "Kalam: kn nŋ\nEnglish: dream",
+                "Kalam: kn kn\nEnglish: sleep long",
+                "Kalam: ñ\nEnglish: eat",
+                "Kalam: nŋ nŋ nŋ nŋ\nEnglish: perceive very long",
+                "Kalam: pk nŋ\nEnglish: feel by pushing",
+                "Kalam: tk ñ\nEnglish: cut and eat",
+                "Kalam: weg\nEnglish: hide"
+            ],
+            "questions": [
+                "Kalam: ad ad ad ad pk",
+                "Kalam: kapkap yib ag",
+                "Kalam: ag nŋ",
+                "Kalam: kasek ap",
+                "Kalam: kamiket nŋ",
+                "Kalam: am ask"
+            ],
+            "answers": [
+                "English: cook very long and push",
+                "English: speak very slowly (say very slowly)",
+                "English: ask (say and perceive)",
+                "English: come back quickly",
+                "English: spy (look or see secretly)",
+                "English: avoid (walk and avoid/reject)"
+            ]
+        },
+        {
+            "name": "Komi-Ziran",
+            "type": [
+                "SEM"
+            ],
+            "difficulty": 5,
+            "data": [
+                "Komi-Ziran: gožömsya lun\nEnglish: summer day",
+                "Komi-Ziran: yusa dzoridz\nEnglish: river flower",
+                "Komi-Ziran: vörsa kör\nEnglish: forest deer",
+                "Komi-Ziran: tövsya asyv\nEnglish: winter morning",
+                "Komi-Ziran: udžtöm vörös\nEnglish: unemployed man",
+                "Komi-Ziran: görasa töv\nEnglish: winter in the mountains",
+                "Komi-Ziran: asyvsya lud\nEnglish: morning meadow",
+                "Komi-Ziran: dzoridztöm nyv\nEnglish: girl without flowers"
+            ],
+            "questions": [
+                "Komi-Ziran: gožöm",
+                "Komi-Ziran: vörtöm göra",
+                "English: deerless forest",
+                "English: meadow flower",
+                "English: day job",
+                "English: unmarried girl"
+            ],
+            "answers": [
+                "English: summer",
+                "English: mountain without forest",
+                "Komi-Ziran: körtöm vör",
+                "Komi-Ziran: ludsa dzoridz",
+                "Komi-Ziran: lunsya udž",
+                "Komi-Ziran: vöröstöm nyv"
+            ]
+        },
+        {
+            "name": "Kutenai",
+            "type": [
+                "SEM"
+            ],
+            "difficulty": 5,
+            "data": [
+                "Kutenai: cmakwumnana\nEnglish: strong belly",
+                "Kutenai: mak\nEnglish: bone",
+                "Kutenai: maknana\nEnglish: little bone",
+                "Kutenai: itǂcmakni\nEnglish: is not strong",
+                "Kutenai: qatnana\nEnglish: little tail",
+                "Kutenai: ǂitqatni\nEnglish: does not have a tail",
+                "Kutenai: kam\nEnglish: deer",
+                "Kutenai: ǂitǂiǂni\nEnglish: is blind"
+            ],
+            "questions": [
+                "Kutenai: kamnana",
+                "Kutenai: ǂiǂnana",
+                "Kutenai: cmakqat",
+                "English: eye",
+                "English: stomach"
+            ],
+            "answers": [
+                "English: little deer",
+                "English: little eye",
+                "English: strong tail",
+                "Kutenai: ǂiǂ",
+                "Kutenai: wum"
+            ]
+        },
+        {
+            "name": "Mapudungan 1",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 2,
+            "data": [
+                "Mapudungan: kümé wentru\nEnglish: good man",
+                "Mapudungan: kümé pafu\nEnglish: good turkey",
+                "Mapudungan: füchá mansun\nEnglish: long ox",
+                "Mapudungan: pichi wentru\nEnglish: small man",
+                "Mapudungan: pichi mansun\nEnglish: small ox",
+                "Mapudungan: weshá ako\nEnglish: bad garlic"
+            ],
+            "questions": [
+                "Mapudungan: kümé ako",
+                "Mapudungan: pichi mansun",
+                "Mapudungan: weshá pafu",
+                "English: long man",
+                "English: small garlic",
+                "English: good ox"
+            ],
+            "answers": [
+                "English: good garlic",
+                "English: small ox",
+                "English: bad turkey",
+                "Mapudungan: füchá wentru",
+                "Mapudungan: pichi ako",
+                "Mapudungan: kümé mansun"
+            ]
+        },
+        {
+            "name": "Mapudungan 2",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 2,
+            "data": [
+                "Mapudungan: piwvn foro\nEnglish: dry bone",
+                "Mapudungan: piwvn foxa\nEnglish: dry mud",
+                "Mapudungan: wej kvxal\nEnglish: uneven fire",
+                "Mapudungan: wezwez foro\nEnglish: crazy bone",
+                "Mapudungan: wezwez kvxal\nEnglish: crazy fire",
+                "Mapudungan: kake kvrvf\nEnglish: different wind"
+            ],
+            "questions": [
+                "Mapudungan: wezwez foxa",
+                "Mapudungan: kake foro",
+                "Mapudungan: kake kvxal",
+                "English: dry fire",
+                "English: uneven bone",
+                "English: different mud"
+            ],
+            "answers": [
+                "English: crazy mud",
+                "English: different bone",
+                "English: different fire",
+                "Mapudungan: piwvn kvxal",
+                "Mapudungan: wej foro",
+                "Mapudungan: kake foxa"
+            ]
+        },
+        {
+            "name": "Mapudungan 3",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 2,
+            "data": [
+                "Mapudungan: agken cikv\nEnglish: dry fishhook",
+                "Mapudungan: agken kuxan\nEnglish: dry pain",
+                "Mapudungan: axeq kara\nEnglish: cold town",
+                "Mapudungan: coz cikv\nEnglish: yellow fishhook",
+                "Mapudungan: coz kara\nEnglish: yellow town",
+                "Mapudungan: erke jike\nEnglish: similar thigh"
+            ],
+            "questions": [
+                "Mapudungan: coz jike",
+                "Mapudungan: axeq jike",
+                "Mapudungan: coz kuxan",
+                "English: dry town",
+                "English: cold fishhook",
+                "English: similar town"
+            ],
+            "answers": [
+                "English: yellow thigh",
+                "English: cold thigh",
+                "English: yellow pain",
+                "Mapudungan: agken kara",
+                "Mapudungan: axeq cikv",
+                "Mapudungan: erke kara"
+            ]
+        },
+        {
+            "name": "Mapudungan 4",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 2,
+            "data": [
+                "Mapudungan: wif kawej\nEnglish: long horse",
+                "Mapudungan: wif kewvh\nEnglish: long tongue",
+                "Mapudungan: kelv kawitu\nEnglish: red bed",
+                "Mapudungan: xogli kawej\nEnglish: thin horse",
+                "Mapudungan: xogli kawitu\nEnglish: thin bed",
+                "Mapudungan: pañus kura\nEnglish: smooth stone"
+            ],
+            "questions": [
+                "Mapudungan: pañus kawitu",
+                "Mapudungan: xogli kewvh",
+                "Mapudungan: kelv kura",
+                "English: long bed",
+                "English: thin stone",
+                "English: smooth horse"
+            ],
+            "answers": [
+                "English: smooth bed",
+                "English: thin tongue",
+                "English: red stone",
+                "Mapudungan: wif kawitu",
+                "Mapudungan: xogli kura",
+                "Mapudungan: pañus kawej"
+            ]
+        },
+        {
+            "name": "Misantla Totonac",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 3,
+            "data": [
+                "Totonac: snapap cik\nEnglish: white house",
+                "Totonac: qat cik\nEnglish: big house",
+                "Totonac: cilni cici\nEnglish: red dog",
+                "Totonac: lihni kiw\nEnglish: yellow tree",
+                "Totonac: cit saaluh\nEnglish: black pot"
+            ],
+            "questions": [
+                "Totonac: snapap kiw",
+                "Totonac: cit cik",
+                "English: red pot",
+                "English: yellow dog"
+            ],
+            "answers": [
+                "English: white tree",
+                "English: black house",
+                "Totonac: cilni saaluh",
+                "Totonac: lihni cici"
+            ]
+        },
+        {
+            "name": "Mixtepec Zapotec",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 2,
+            "data": [
+                "Mixtepec Zapotec: guìts nquǐts\nEnglish: white paper",
+                "Mixtepec Zapotec: mĚEd nquǐts\nEnglish: white child",
+                "Mixtepec Zapotec: làp nguiǎ\nEnglish: green pen",
+                "Mixtepec Zapotec: guìts ngǎs\nEnglish: black paper",
+                "Mixtepec Zapotec: làp ngǎs\nEnglish: black pen",
+                "Mixtepec Zapotec: dzìt xquìdiè\nEnglish: gray egg"
+            ],
+            "questions": [
+                "Mixtepec Zapotec: mĚEd ngǎs",
+                "Mixtepec Zapotec: guìts nguiǎ",
+                "Mixtepec Zapotec: dzìt nguiǎ",
+                "English: white pen",
+                "English: black egg",
+                "English: gray child"
+            ],
+            "answers": [
+                "English: black child",
+                "English: green paper",
+                "English: green egg",
+                "Mixtepec Zapotec: làp nquǐts",
+                "Mixtepec Zapotec: dzìt ngǎs",
+                "Mixtepec Zapotec: mĚEd xquìdiè"
+            ]
+        },
+        {
+            "name": "Mixtepec Zapotec 2",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 2,
+            "data": [
+                "Mixtepec Zapotec: gù nìzhniê\nEnglish: red tuber",
+                "Mixtepec Zapotec: bàa nìzhniê\nEnglish: red tomb",
+                "Mixtepec Zapotec: zhàb gùts\nEnglish: yellow clothing",
+                "Mixtepec Zapotec: gù ròsâd\nEnglish: pink tuber",
+                "Mixtepec Zapotec: zhàb ròsâd\nEnglish: pink clothing",
+                "Mixtepec Zapotec: yâg yèech\nEnglish: milky stick"
+            ],
+            "questions": [
+                "Mixtepec Zapotec: zhàb yèech",
+                "Mixtepec Zapotec: zhàb ròsâd",
+                "Mixtepec Zapotec: bàa yèech",
+                "English: red clothing",
+                "English: yellow tuber",
+                "English: milky tomb"
+            ],
+            "answers": [
+                "English: milky clothing",
+                "English: pink clothing",
+                "English: milky tomb",
+                "Mixtepec Zapotec: zhàb nìzhniê",
+                "Mixtepec Zapotec: gù gùts",
+                "Mixtepec Zapotec: bàa yèech"
+            ]
+        },
+        {
+            "name": "Mixtepec Zapotec 3",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 2,
+            "data": [
+                "Mixtepec Zapotec: guîzh tìb\nEnglish: one payment",
+                "Mixtepec Zapotec: mÈcw tìb\nEnglish: one dog",
+                "Mixtepec Zapotec: zhǐits nguěts\nEnglish: pallid pineapple",
+                "Mixtepec Zapotec: guîzh mòrâd\nEnglish: purple payment",
+                "Mixtepec Zapotec: zhǐits mòrâd\nEnglish: purple pineapple",
+                "Mixtepec Zapotec: bǎd nàrânj\nEnglish: orange duck"
+            ],
+            "questions": [
+                "Mixtepec Zapotec: guîzh nguěts",
+                "Mixtepec Zapotec: zhǐits nàrânj",
+                "Mixtepec Zapotec: bǎd tìb",
+                "English: purple duck",
+                "English: one pineapple",
+                "English: pallid duck"
+            ],
+            "answers": [
+                "English: pallid payment",
+                "English: orange pineapple",
+                "English: one duck",
+                "Mixtepec Zapotec: bǎd mòrâd",
+                "Mixtepec Zapotec: zhǐits tìb",
+                "Mixtepec Zapotec: bǎd nguěts"
+            ]
+        },
+        {
+            "name": "Mixtepec Zapotec 4",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 2,
+            "data": [
+                "Mixtepec Zapotec: mèr càfê\nEnglish: brown turkey",
+                "Mixtepec Zapotec: mèedz càfê\nEnglish: brown wildcat",
+                "Mixtepec Zapotec: msì àzûl\nEnglish: blue eagle",
+                "Mixtepec Zapotec: mèr gól\nEnglish: old turkey",
+                "Mixtepec Zapotec: msì gól\nEnglish: old eagle",
+                "Mixtepec Zapotec: mliàn dzěgà\nEnglish: slow jackrabbit"
+            ],
+            "questions": [
+                "Mixtepec Zapotec: mliàn gól",
+                "Mixtepec Zapotec: mliàn càfê",
+                "Mixtepec Zapotec: msì dzěgà",
+                "English: brown eagle",
+                "English: slow turkey",
+                "English: blue jackrabbit"
+            ],
+            "answers": [
+                "English: old jackrabbit",
+                "English: brown jackrabbit",
+                "English: slow eagle",
+                "Mixtepec Zapotec: msì càfê",
+                "Mixtepec Zapotec: mèr dzěgà",
+                "Mixtepec Zapotec: mliàn àzûl"
+            ]
+        },
+        {
+            "name": "Ngadha 1",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 2,
+            "data": [
+                "Ngadha: ngemme meze\nEnglish: big gourd",
+                "Ngadha: li'e meze\nEnglish: big leaf",
+                "Ngadha: ika leva\nEnglish: long fish",
+                "Ngadha: ngemme bhara\nEnglish: white gourd",
+                "Ngadha: ika bhara\nEnglish: white fish",
+                "Ngadha: kaju keddhi\nEnglish: small tree"
+            ],
+            "questions": [
+                "English: white fruit",
+                "English: big tree",
+                "English: small gourd",
+                "Ngadha: kaju leva",
+                "Ngadha: ika meze",
+                "Ngadha: li'e keddhi"
+            ],
+            "answers": [
+                "Ngadha: li'e bhara",
+                "Ngadha: kaju meze",
+                "Ngadha: ngemme keddhi",
+                "English: long tree",
+                "English: big fish",
+                "English: small fruit"
+            ]
+        },
+        {
+            "name": "Ngadha 2",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 4,
+            "data": [
+                "Ngadha: li'e\nEnglish: fruit",
+                "Ngadha: ngemme sali'e\nEnglish: one gourd",
+                "Ngadha: kaju pu'u zua\nEnglish: two trees",
+                "Ngadha: ika eko tellu\nEnglish: three fish",
+                "Ngadha: ngemme li'e sabulu\nEnglish: ten gourds",
+                "Ngadha: ika eko buluzua 'essazua\nEnglish: twenty-two fish",
+                "Ngadha: lako eko sabulu sa'essa\nEnglish: eleven dogs"
+            ],
+            "questions": [
+                "English: two fish",
+                "English: three gourds",
+                "English: twenty fruits",
+                "English: thirteen tails",
+                "Ngadha: kaju sapu'u",
+                "Ngadha: lako eko sabulu 'essazua",
+                "Ngadha: lako eko buluzua sa'essa",
+                "Ngadha: eko saeko"
+            ],
+            "answers": [
+                "Ngadha: ika eko zua",
+                "Ngadha: ngemme li'e tellu",
+                "Ngadha: li'e li'e buluzua",
+                "Ngadha: eko eko sabulu 'essatellu",
+                "English: one tree",
+                "English: twelve dogs",
+                "English: twenty-one dogs",
+                "English: one tail"
+            ]
+        },
+        {
+            "name": "Niuean",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 3,
+            "data": [
+                "Niuean: tagata mitaki\nEnglish: good man",
+                "Niuean: moa fifine mitaki\nEnglish: good hen",
+                "Niuean: solofanua matolu\nEnglish: thick horse",
+                "Niuean: tagata ku\nEnglish: short man",
+                "Niuean: solofanua ku\nEnglish: short horse",
+                "Niuean: mamoe uka\nEnglish: difficult sheep"
+            ],
+            "questions": [
+                "Niuean: moa fifine ku",
+                "Niuean: solofanua uka",
+                "Niuean: tagata matolu",
+                "English: short sheep",
+                "English: difficult man",
+                "English: thick hen"
+            ],
+            "answers": [
+                "English: short hen",
+                "English: difficult horse",
+                "English: thick man",
+                "Niuean: mamoe ku",
+                "Niuean: tagata uka",
+                "Niuean: moa fifine matolu"
+            ]
+        },
+        {
+            "name": "Niuean 2",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 2,
+            "data": [
+                "Niuean: fifine tututomu\nEnglish: just woman",
+                "Niuean: ohi tututomu\nEnglish: just descendent",
+                "Niuean: namu tote\nEnglish: small mosquito",
+                "Niuean: fifine pulahi\nEnglish: wide woman",
+                "Niuean: namu pulahi\nEnglish: wide mosquito",
+                "Niuean: nifo hokulo\nEnglish: deep tooth"
+            ],
+            "questions": [
+                "Niuean: ohi pulahi",
+                "Niuean: namu hokulo",
+                "Niuean: fifine tote",
+                "English: just mosquito",
+                "English: wide tooth",
+                "English: small descendent"
+            ],
+            "answers": [
+                "English: wide descendent",
+                "English: deep mosquito",
+                "English: small woman",
+                "Niuean: namu tututomu",
+                "Niuean: nifo pulahi",
+                "Niuean: ohi tote"
+            ]
+        },
+        {
+            "name": "Niuean 3",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 2,
+            "data": [
+                "Niuean: toki lahi\nEnglish: big axe",
+                "Niuean: polopologa lahi\nEnglish: big mold",
+                "Niuean: meamea holo\nEnglish: fast infant",
+                "Niuean: toki tote\nEnglish: small axe",
+                "Niuean: meamea tote\nEnglish: small infant",
+                "Niuean: lapatoa lolelole\nEnglish: weak iron"
+            ],
+            "questions": [
+                "Niuean: polopologa tote",
+                "Niuean: meamea lolelole",
+                "Niuean: lapatoa lahi",
+                "English: big infant",
+                "English: fast axe",
+                "English: weak mold"
+            ],
+            "answers": [
+                "English: small mold",
+                "English: weak infant",
+                "English: big iron",
+                "Niuean: meamea lahi",
+                "Niuean: toki holo",
+                "Niuean: polopologa lolelole"
+            ]
+        },
+        {
+            "name": "Rapa Nui",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 1,
+            "data": [
+                "English: I see you.\nRapa Nui: tike'a au koe",
+                "English: We see.\nRapa Nui: tike'a tātou",
+                "English: We hear you.\nRapa Nui: ŋaro'a tātou koe",
+                "English: You fly.\nRapa Nui: rere koe",
+                "English: The person hits the dog.\nRapa Nui: pu'a taŋata paiheŋas",
+                "English: The dog drinks the water.\nRapa Nui: unu paiheŋas bai",
+                "English: The fish drinks the blood.\nRapa Nui: unu ika toto",
+                "English: We bite the bone.\nRapa Nui: ŋau tātou ivi",
+                "English: The fish sleeps.\nRapa Nui: ha'uru ika"
+            ],
+            "questions": [
+                "English: I see.",
+                "English: The person hits you.",
+                "English: We fly.",
+                "Rapa Nui: tike'a ika ivi",
+                "Rapa Nui: ha'uru tātou"
+            ],
+            "answers": [
+                "Rapa Nui: tike'a au",
+                "Rapa Nui: pu'a taŋata koe",
+                "Rapa Nui: rere tātou",
+                "English: The fish sees the bone.",
+                "English: We sleep."
+            ]
+        },
+        {
+            "name": "Rapa Nui 2",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 4,
+            "data": [
+                "Rapa Nui: kau tātou\nEnglish: We swim.",
+                "Rapa Nui: kai koe\nEnglish: You eat.",
+                "Rapa Nui: ha'uru paiheŋas\nEnglish: The dog sleeps.",
+                "Rapa Nui: kau paiheŋas\nEnglish: The dog swims.",
+                "Rapa Nui: ha'ere au\nEnglish: I walk.",
+                "Rapa Nui: rere manu\nEnglish: The bird flies.",
+                "Rapa Nui: ha'ere manu\nEnglish: The bird walks."
+            ],
+            "questions": [
+                "English: You fly.",
+                "English: We sleep.",
+                "Rapa Nui: ha'uru au",
+                "Rapa Nui: kai manu"
+            ],
+            "answers": [
+                "Rapa Nui: rere koe",
+                "Rapa Nui: ha'uru tātou",
+                "English: I sleep.",
+                "English: The bird eats."
+            ]
+        },
+        {
+            "name": "Rapa Nui 3",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 2,
+            "data": [
+                "English: I see you.\nRapa Nui: tike'a au koe",
+                "English: We hear you.\nRapa Nui: ŋaro'a tātou koe",
+                "English: The person hits me.\nRapa Nui: pu'a taŋata au",
+                "English: The dog drinks the water.\nRapa Nui: unu paiheŋas bai",
+                "English: The fish drinks the blood.\nRapa Nui: unu ika toto",
+                "English: We bite the bone.\nRapa Nui: ŋau tātou ivi",
+                "English: We hit the bird.\nRapa Nui: pu'a tātou manu"
+            ],
+            "questions": [
+                "English: The person hits you.",
+                "English: We hear the bird.",
+                "English: The bird bites you.",
+                "Rapa Nui: tike'a ika ivi",
+                "Rapa Nui: ŋaro'a taŋata bai"
+            ],
+            "answers": [
+                "Rapa Nui: pu'a taŋata koe",
+                "Rapa Nui: ŋaro'a tātou manu",
+                "Rapa Nui: ŋau manu koe",
+                "English: The fish sees the bone.",
+                "English: The person hears the water."
+            ]
+        },
+        {
+            "name": "Rapa Nui 4",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 3,
+            "data": [
+                "English: We see you.\nRapa Nui: tike'a tātou koe",
+                "English: I hear you.\nRapa Nui: ŋaro'a au koe",
+                "English: I see you.\nRapa Nui: tike'a au koe",
+                "English: We hear you.\nRapa Nui: ŋaro'a tātou koe",
+                "English: The person hits me.\nRapa Nui: pu'a taŋata au",
+                "English: The dog drinks the water.\nRapa Nui: unu paiheŋas bai",
+                "English: The fish drinks the blood.\nRapa Nui: unu ika toto",
+                "English: We bite the bone.\nRapa Nui: ŋau tātou ivi",
+                "English: We hit the bird.\nRapa Nui: pu'a tātou manu"
+            ],
+            "questions": [
+                "English: The person hits you.",
+                "English: We hear the bird.",
+                "English: The bird bites you.",
+                "Rapa Nui: tike'a ika ivi",
+                "Rapa Nui: ŋaro'a taŋata bai"
+            ],
+            "answers": [
+                "Rapa Nui: pu'a taŋata koe",
+                "Rapa Nui: ŋaro'a tātou manu",
+                "Rapa Nui: ŋau manu koe",
+                "English: The fish sees the bone.",
+                "English: The person hears the water."
+            ]
+        },
+        {
+            "name": "Rapa Nui 5",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 2,
+            "data": [
+                "English: We swim.\nRapa Nui: kau tātou",
+                "English: I see you.\nRapa Nui: tike'a au koe",
+                "English: We see.\nRapa Nui: tike'a tātou",
+                "English: We hear you.\nRapa Nui: ŋaro'a tātou koe",
+                "English: You fly.\nRapa Nui: rere koe",
+                "English: The person hits the dog.\nRapa Nui: pu'a taŋata paiheŋas",
+                "English: The dog drinks the water.\nRapa Nui: unu paiheŋas bai",
+                "English: The fish drinks the blood.\nRapa Nui: unu ika toto",
+                "English: We bite the bone.\nRapa Nui: ŋau tātou ivi",
+                "English: The bird flies.\nRapa Nui: rere manu",
+                "English: The fish sleeps.\nRapa Nui: ha'uru ika"
+            ],
+            "questions": [
+                "English: The fish swims.",
+                "English: I see.",
+                "English: The person hits you.",
+                "English: We fly.",
+                "Rapa Nui: tike'a ika ivi",
+                "Rapa Nui: ha'uru tātou"
+            ],
+            "answers": [
+                "Rapa Nui: kau ika",
+                "Rapa Nui: tike'a au",
+                "Rapa Nui: pu'a taŋata koe",
+                "Rapa Nui: rere tātou",
+                "English: The fish sees the bone.",
+                "English: We sleep."
+            ]
+        },
+        {
+            "name": "Rapa Nui 6",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 3,
+            "data": [
+                "English: good horses\nRapa Nui: ŋā hoi ririva",
+                "English: good eye\nRapa Nui: mata rivariva",
+                "English: long house\nRapa Nui: hare roaroa",
+                "English: bad horse\nRapa Nui: hoi rakerake",
+                "English: long houses\nRapa Nui: ŋā hare roroa",
+                "English: big island\nRapa Nui: henua nuinui",
+                "English: big horses\nRapa Nui: ŋā hoi nunui"
+            ],
+            "questions": [
+                "English: big houses",
+                "English: bad eyes",
+                "English: long island",
+                "Rapa Nui: ŋā hare ririva",
+                "Rapa Nui: ŋā henua roroa",
+                "Rapa Nui: mata nuinui"
+            ],
+            "answers": [
+                "Rapa Nui: ŋā hare nunui",
+                "Rapa Nui: ŋā mata rarake",
+                "Rapa Nui: henua roaroa",
+                "English: good houses",
+                "English: long islands",
+                "English: big eye"
+            ]
+        },
+        {
+            "name": "Rapa Nui 7",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 3,
+            "data": [
+                "English: red blood\nRapa Nui: toto meamea",
+                "English: red rope\nRapa Nui: taura meamea",
+                "English: blue house\nRapa Nui: hare moana",
+                "English: white blood\nRapa Nui: toto teatea",
+                "English: white house\nRapa Nui: hare teatea",
+                "English: green sea\nRapa Nui: tai ritomata"
+            ],
+            "questions": [
+                "English: blue sea",
+                "English: white rope",
+                "English: green house",
+                "Rapa Nui: tai meamea",
+                "Rapa Nui: taura ritomata",
+                "Rapa Nui: toto moana"
+            ],
+            "answers": [
+                "Rapa Nui: tai moana",
+                "Rapa Nui: taura teatea",
+                "Rapa Nui: hare ritomata",
+                "English: red sea",
+                "English: green rope",
+                "English: blue blood"
+            ]
+        },
+        {
+            "name": "Seri",
+            "type": [
+                "NOUN-ADJ"
+            ],
+            "difficulty": 5,
+            "data": [
+                "Seri: ctam cacösxaj quih\nEnglish: the tall man",
+                "Seri: cmaam imácösxaj quih\nEnglish: the short woman",
+                "Seri: ziix hapx coom imátol quih\nEnglish: the unafraid shark",
+                "Seri: satoj caacoj quih\nEnglish: the big net bag"
+            ],
+            "questions": [
+                "Seri: cmaam caacoj quih",
+                "Seri: ziix hapx coom imáacoj quih",
+                "English: the short man",
+                "English: the small net bag"
+            ],
+            "answers": [
+                "English: the big woman",
+                "English: the small shark",
+                "Seri: ctam imácösxaj quih",
+                "Seri: satoj imáacoj quih"
+            ]
+        },
+        {
+            "name": "Seri 2",
+            "type": [
+                "ORDER"
+            ],
+            "difficulty": 5,
+            "data": [
+                "Seri: tom quij\nEnglish: the money",
+                "Seri: Trooqui quij mazíim.\nEnglish: The truck is beautiful.",
+                "Seri: Canóaa com haaco cop ano quiij iha.\nEnglish: The canoe is inside the house.",
+                "Seri: Simet quij trooqui cop ano quiij iha.\nEnglish: The bread is inside the truck.",
+                "Seri: Canóaa com quihízlc iha.\nEnglish: The canoe is dirty.",
+                "Seri: Cmiique quih canóaa cop ano quiij iha.\nEnglish: The person is inside the canoe."
+            ],
+            "questions": [
+                "Seri: Cmiique quih mazíim.",
+                "Seri: Haaco quij quihízlc iha.",
+                "English: The money is in the canoe.",
+                "English: The person ate the bread (the bread is inside the person)."
+            ],
+            "answers": [
+                "English: The person is beautiful.",
+                "English: The house is dirty.",
+                "Seri: Tom quij canóoa cop ano quij iha.",
+                "Seri: Simet quij cmiique cop ano quiij iha."
+            ]
+        },
+        {
+            "name": "Seri 3",
+            "type": [
+                "SEM"
+            ],
+            "difficulty": 5,
+            "data": [
+                "Seri: yanópj\nEnglish: wrist",
+                "Seri: an icoáah itac\nEnglish: syringe",
+                "Seri: ano quimt\nEnglish: to fold",
+                "Seri: iflc ano cöihímt\nEnglish: knee joint",
+                "Seri: ziix an icoáah\nEnglish: nurse",
+                "Seri: ziix áno quiimla\nEnglish: hinge (of an opening)"
+            ],
+            "questions": [
+                "Seri: an icoáah",
+                "Seri: ano cöihímt",
+                "English: to open",
+                "English: wrist joint",
+                "English: thing, person"
+            ],
+            "answers": [
+                "English: to inject",
+                "English: joint",
+                "Seri: quiimla",
+                "Seri: yanópj ano cöihímt",
+                "Seri: ziix"
+            ]
+        },
+        {
+            "name": "Seri 4",
+            "type": [
+                "POSS"
+            ],
+            "difficulty": 5,
+            "data": [
+                "Seri: haacat\nEnglish: nephew",
+                "Seri: tootaroj\nEnglish: chickens",
+                "Seri: aac\nEnglish: his nephew",
+                "Seri: asaacla\nEnglish: his sons",
+                "Seri: masaac\nEnglish: your son",
+                "Seri: tooaz yaa\nEnglish: his towel",
+                "Seri: contiiroj yaa\nEnglish: his lamps"
+            ],
+            "questions": [
+                "Seri: tootar",
+                "Seri: haacatoj",
+                "Seri: hasaacat",
+                "Seri: contiir",
+                "English: towels",
+                "English: his lamp",
+                "English: your nephew",
+                "English: his chickens"
+            ],
+            "answers": [
+                "English: chicken",
+                "English: nephews",
+                "English: son",
+                "English: lamp",
+                "Seri: tooazoj",
+                "Seri: contiir yaa",
+                "Seri: maac",
+                "Seri: tootaroj yaa"
+            ]
+        },
+        {
+            "name": "Totonac",
+            "type": [
+                "POSS"
+            ],
+            "difficulty": 5,
+            "data": [
+                "Totonac: šatéko\nEnglish: father",
+                "Totonac: kinkám\nEnglish: my child",
+                "Totonac: kštíilan\nEnglish: his hen",
+                "Totonac: kintuminkám\nEnglish: our money",
+                "Totonac: kintéko\nEnglish: my father",
+                "Totonac: kštiilankám\nEnglish: their hens",
+                "Totonac: kšnúxuti kúsi\nEnglish: Jose's vein",
+                "Totonac: ščičíi\nEnglish: his dog"
+            ],
+            "questions": [
+                "Totonac: štúmin kúsi",
+                "Totonac: šakám",
+                "Totonac: kinčičiikám",
+                "English: vein",
+                "English: their dogs",
+                "English: their children"
+            ],
+            "answers": [
+                "English: Jose's money",
+                "English: child",
+                "English: our dogs",
+                "Totonac: šnúxuti",
+                "Totonac: ščičiikám",
+                "Totonac: škamkám"
+            ]
+        }
+    ]
+}
