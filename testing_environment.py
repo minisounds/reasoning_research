@@ -11,83 +11,81 @@ tokenizer.pad_token = tokenizer.eos_token
 config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B")
 config.use_cache = False 
     
-def get_steering_vectors():
-    # Dictionary to store activations
-    # TODO: use 3rd party service to store activations
-    activations = {}
 
-    # Hook function to save activations
-    def save_activation(name):
-        def hook(model, input, output):
-            if isinstance(output, tuple):
-                activations[name] = output[0].detach()  # Assuming the first element is the main output
-            else:
-                activations[name] = output.detach()
-        return hook
+def get_steering_vector(texts, model, tokenizer, layer_idx=15):
+    if len(texts) != 2:
+        raise ValueError("This function requires exactly two texts to compute the steering vector difference.")
+    
+    activations = []
 
-    # Register hooks for layers you want to capture
-    layer_idx = 15
-    layers_to_capture = [layer_idx] # capture latter half of layers (look at which ones spec)
-    for layer_num in layers_to_capture:
-        model.model.layers[layer_num].register_forward_hook(save_activation(f'layer_{layer_num}'))
+    # Function to save activations
+    def save_activation(model, input, output):
+        activations.append(output[0].detach())  # Assuming output is a tuple and we need the first element
 
-    # Function to process a batch of texts and save activations
-    def process_batch(texts, file, batch_size=32):
-        for i in tqdm(range(0, len(texts), batch_size)):
-            batch = texts[i:i+batch_size]
-            inputs = tokenizer(batch, return_tensors="pt", padding=True, truncation=True, max_length=512)
+    # Register hook for the specified layer
+    handle = model.model.layers[layer_idx].register_forward_hook(save_activation)
+
+    # Process both texts and capture activations
+    for text in texts:
+        inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
+        
+        # Perform forward pass to trigger hooks
+        with torch.no_grad():
+            _ = model(**inputs)
             
-            with torch.no_grad():
-                outputs = model(**inputs)
-            
-            for layer_name, activation in activations.items():
-                if isinstance(activation, torch.Tensor):
-                    activation_np = activation.cpu().numpy()
-                else:
-                    print(f"Unexpected activation type for {layer_name}: {type(activation)}")
-                    continue
+    # Remove the hook after processing both texts
+    handle.remove()
 
-                dataset = file.require_dataset(
-                    f"{layer_name}/batch_{i//batch_size}", 
-                    shape=(len(batch),) + activation_np.shape[1:],
-                    dtype='float32',
-                    compression="gzip",
-                    compression_opts=9,
-                )
-                dataset[:] = activation_np
-        return activations[f"layer_{layer_idx}"][1] - activations[f"layer_{layer_idx}"][0]
-    
-    texts = [
-        "Hello, how are you?",
-        "The quick brown fox jumps over the lazy dog.",
-        # ... add more texts here
-    ]
+    # Ensure both activation tensors have the same sequence length
+    max_seq_length = max(activations[0].shape[1], activations[1].shape[1])
+    padded_activations = [torch.nn.functional.pad(act, (0, 0, 0, max_seq_length - act.shape[1])) for act in activations]
 
-    # Save activations to HDF5 file
-    with h5py.File('llama_activations.h5', 'w') as f:
-        steering_vectors = process_batch(texts, f)
+    # Calculate the difference between the two activation tensors
+    steering_vector = padded_activations[1] - padded_activations[0]
 
-    print("Activations saved to llama_activations.h5")
-    return steering_vectors
-    
-    
-#def steered_forward(model, layer_number, steering_vectors, prompt):
-#    model.model.layers[layer_number]
+    return steering_vector
 
-steering_vectors = get_steering_vectors()
+# Example usage
+texts = ["Hello, how are you?", "The quick brown fox jumps over the lazy dog."]
+steering_vector = get_steering_vector(texts, model, tokenizer)
+print("Steering vector shape:", steering_vector.shape)
+
+
+# def add_steering_vectors_hook(module, input, output):
+#     # Ensure both output tensors have the same sequence length
+#     max_seq_length = max(output[0].shape[1], steering_vector.shape[1])
+#     padded_output = torch.nn.functional.pad(output[0], (0, 0, 0, max_seq_length - output[0].shape[1]))
+#     padded_steering_vector = torch.nn.functional.pad(steering_vector, (0, 0, 0, max_seq_length - steering_vector.shape[1]))
+
+#     # Add the padded steering vector to the padded output
+#     return padded_output + padded_steering_vector, output[1]
+
 def add_steering_vectors_hook(module, input, output):
-    if module == model.model.layers[15]:
-        return output[0] + steering_vectors, output[1]
-    return output
+    global steering_vector  # Ensure this is accessible
+    
+    # Get the current sequence length
+    current_seq_length = output[0].shape[1]
+    
+    # Trim or pad the steering vector to match the current sequence length
+    if steering_vector.shape[1] > current_seq_length:
+        adjusted_steering_vector = steering_vector[:, :current_seq_length, :]
+    else:
+        adjusted_steering_vector = torch.nn.functional.pad(
+            steering_vector, 
+            (0, 0, 0, current_seq_length - steering_vector.shape[1], 0, 0)
+        )
+    
+    # Add the adjusted steering vector to the output
+    return output[0] + adjusted_steering_vector, output[1]
 
 pre = model(tokenizer("Hello, how are you?", return_tensors="pt")["input_ids"])
 model.model.layers[15].register_forward_hook(add_steering_vectors_hook)
 post = model(tokenizer("Hello, how are you?", return_tensors="pt")["input_ids"])
 
-assert pre != post
+print(pre[0] != post[0])
 
 # Access the logits from the output tuple
-logits = post[0]
+# logits = post[0]
 
 # Check the shape of the logits
-print(logits.shape)
+# print(logits.shape)
