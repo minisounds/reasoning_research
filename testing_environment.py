@@ -85,3 +85,7 @@ def test_steering():
     print(f"answer: {answer}")
 
 test_steering()
+
+# Next Steps: 
+# Figure out how to utilize GPU on Runpod
+# Figure out the bug in terminal about tokens not being used correctly 
