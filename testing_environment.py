@@ -4,6 +4,7 @@ import numpy as np
 from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaConfig
 import torch
 from tqdm import tqdm
+from benchmarks.addition_benchmark import generate_addition_problem # benchmark #1 - add 3 numbers together 
 
 model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B")
 tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B")
@@ -40,25 +41,21 @@ def get_steering_vector(texts, model, tokenizer, layer_idx=15):
     max_seq_length = max(activations[0].shape[1], activations[1].shape[1])
     padded_activations = [torch.nn.functional.pad(act, (0, 0, 0, max_seq_length - act.shape[1])) for act in activations]
 
-    # Calculate the difference between the two activation tensors
     steering_vector = padded_activations[1] - padded_activations[0]
 
     return steering_vector
 
-# Example usage
-texts = ["Hello, how are you?", "The quick brown fox jumps over the lazy dog."]
-steering_vector = get_steering_vector(texts, model, tokenizer)
-print("Steering vector shape:", steering_vector.shape)
+# Dataset 
+def generate_dataset(): 
+    num1, num2, num3, answer = generate_addition_problem()
+    w_cot = f"Answer the following problem by thinking step by step: {num1} + {num2} + {num3} = "
+    wo_cot = f"Answer the following problem by just providing the answer: {num1} + {num2} + {num3} = "
+    return w_cot, wo_cot, answer
 
+w_cot, wo_cot, answer = generate_dataset()
+prompts = [w_cot, wo_cot]
 
-# def add_steering_vectors_hook(module, input, output):
-#     # Ensure both output tensors have the same sequence length
-#     max_seq_length = max(output[0].shape[1], steering_vector.shape[1])
-#     padded_output = torch.nn.functional.pad(output[0], (0, 0, 0, max_seq_length - output[0].shape[1]))
-#     padded_steering_vector = torch.nn.functional.pad(steering_vector, (0, 0, 0, max_seq_length - steering_vector.shape[1]))
-
-#     # Add the padded steering vector to the padded output
-#     return padded_output + padded_steering_vector, output[1]
+steering_vector = get_steering_vector(prompts, model, tokenizer)
 
 def add_steering_vectors_hook(module, input, output):
     global steering_vector  # Ensure this is accessible
@@ -78,14 +75,13 @@ def add_steering_vectors_hook(module, input, output):
     # Add the adjusted steering vector to the output
     return output[0] + adjusted_steering_vector, output[1]
 
-pre = model(tokenizer("Hello, how are you?", return_tensors="pt")["input_ids"])
-model.model.layers[15].register_forward_hook(add_steering_vectors_hook)
-post = model(tokenizer("Hello, how are you?", return_tensors="pt")["input_ids"])
+def test_steering():
+    n1, n2, n3, answer = generate_addition_problem() # insert new prompt here (can be loop in future)
+    pre = model(tokenizer(f"Solve the following problem: {n1} + {n2} + {n3} = ", return_tensors="pt")["input_ids"])
+    print(f"pre answer: {pre}")
+    model.model.layers[15].register_forward_hook(add_steering_vectors_hook)
+    post = model(tokenizer(f"Solve the following problem: {n1} + {n2} + {n3} = ", return_tensors="pt")["input_ids"])
+    print(f"post answer: {post}")
+    print(f"answer: {answer}")
 
-print(pre[0] != post[0])
-
-# Access the logits from the output tuple
-# logits = post[0]
-
-# Check the shape of the logits
-# print(logits.shape)
+test_steering()
