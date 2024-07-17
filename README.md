@@ -7,7 +7,7 @@ pip install transformers h5py
 # Authenticate with HuggingFace
 huggingface-cli login
 
-# Push from VM
+# Commit & Push to Runpod VM
 git config --global user.email "MY_NAME@example.com"
 git config --global user.name "FIRST_NAME LAST_NAME"
 
