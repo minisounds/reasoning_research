@@ -77,10 +77,10 @@ def add_steering_vectors_hook(module, input, output):
 
 def test_steering():
     n1, n2, n3, answer = generate_addition_problem() # insert new prompt here (can be loop in future)
-    pre = model(tokenizer(f"Solve the following problem: {n1} + {n2} + {n3} = ", return_tensors="pt")["input_ids"])
+    pre = tokenizer.decode(model.generate(tokenizer(f"Solve the following problem: {n1} + {n2} + {n3} = ", return_tensors="pt")["input_ids"], max_new_tokens=50)[0])
     print(f"pre answer: {pre}")
     model.model.layers[15].register_forward_hook(add_steering_vectors_hook)
-    post = model(tokenizer(f"Solve the following problem: {n1} + {n2} + {n3} = ", return_tensors="pt")["input_ids"])
+    post = tokenizer.decode(model.generate(tokenizer(f"Solve the following problem: {n1} + {n2} + {n3} = ", return_tensors="pt")["input_ids"], max_new_tokens=50)[0])
     print(f"post answer: {post}")
     print(f"answer: {answer}")
 
