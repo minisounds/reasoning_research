@@ -14,20 +14,26 @@ from benchmarks.addition_benchmark import (
     generate_addition_problem,
 )  # benchmark #1 - add 3 numbers together
 
-# model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B")
-# tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B")
-# tokenizer.pad_token = tokenizer.eos_token
-# config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B")
-# config.use_cache = False
+# Set up the device
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = AutoModelForCausalLM.from_pretrained("gpt2")
-tokenizer = AutoTokenizer.from_pretrained("gpt2")
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B")
+model = model.to(device)  # Move model to GPU
+
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B")
 tokenizer.pad_token = tokenizer.eos_token
-config = model.config
+tokenizer.pad_token_id = tokenizer.eos_token_id
+config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B")
 config.use_cache = False
 
+# model = AutoModelForCausalLM.from_pretrained("gpt2")
+# tokenizer = AutoTokenizer.from_pretrained("")
+# tokenizer.pad_token = tokenizer.eos_token
+# config = model.config
+# config.use_cache = False
+LAYER = 20
 
-def get_steering_vector(texts, model, tokenizer, layer_idx=3):
+def get_steering_vector(texts, model, tokenizer, layer_idx=LAYER):
     if len(texts) != 2:
         raise ValueError(
             "This function requires exactly two texts to compute the steering vector difference."
@@ -43,16 +49,18 @@ def get_steering_vector(texts, model, tokenizer, layer_idx=3):
 
     # Register hook for the specified layer
     if isinstance(model, LlamaForCausalLM):
-        handle = model.model.layers[-layer_idx].register_forward_hook(save_activation)
+        print("in Llama rn")
+        handle = model.model.layers[layer_idx].register_forward_hook(save_activation)
     elif isinstance(model, GPT2LMHeadModel):
-        handle = model.transformer.h[-layer_idx].register_forward_hook(save_activation)
+        handle = model.transformer.h[layer_idx].register_forward_hook(save_activation)
     else:
         raise ValueError("Unsupported model type")
     # Process both texts and capture activations
     for text in texts:
         inputs = tokenizer(
-            text, return_tensors="pt", padding=True, truncation=True, max_length=512
+            text, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True
         )
+        inputs = {k: v.to(device) for k, v in inputs.items()} # Move inputs to GPU 
 
         # Perform forward pass to trigger hooks
         with torch.no_grad():
@@ -68,24 +76,18 @@ def get_steering_vector(texts, model, tokenizer, layer_idx=3):
         for act in activations
     ]
 
-    steering_vector = padded_activations[1] - padded_activations[0]
+    steering_vector = padded_activations[0] - padded_activations[1]
 
     return steering_vector
 
 
 # Dataset
-def generate_dataset():
-    num1, num2, num3, answer = generate_addition_problem()
-    w_cot = f"Answer the following problem by thinking step by step: {num1} + {num2} + {num3} = "
-    wo_cot = f"Answer the following problem by just providing the answer: {num1} + {num2} + {num3} = "
-    return w_cot, wo_cot, answer
+w_cot = f"Answer the following problems by thinking step by step"
+wo_cot = f"Answer the following problems by just providing the answer"
 
-
-w_cot, wo_cot, answer = generate_dataset()
 prompts = [w_cot, wo_cot]
 
 steering_vector = get_steering_vector(prompts, model, tokenizer)
-
 
 def add_steering_vectors_hook(module, input, output):
     global steering_vector  # Ensure this is accessible
@@ -107,34 +109,50 @@ def add_steering_vectors_hook(module, input, output):
 
 
 def test_steering():
-    n1, n2, n3, answer = (
-        generate_addition_problem()
-    )  # insert new prompt here (can be loop in future)
+    n1, n2, n3, answer = generate_addition_problem()  # insert new prompt here (can be loop in future)
+    
+    # Generate tokens before steering
+    inputs = tokenizer(
+        f"Solve the following problem: {n1} + {n2} + {n3} = ",
+        return_tensors="pt",
+        return_attention_mask=True
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()} # Move inputs to GPU 
+    
+    # generate using generated tokens 
     pre = tokenizer.decode(
         model.generate(
-            tokenizer(
-                f"Solve the following problem: {n1} + {n2} + {n3} = ",
-                return_tensors="pt",
-            )["input_ids"],
-            max_new_tokens=50,
+            input_ids = inputs["input_ids"],
+            attention_mask = inputs["attention_mask"],
+            max_new_tokens=150,
         )[0]
     )
+    
     print(f"pre answer: {pre}")
+    
     if isinstance(model, LlamaForCausalLM):
-        model.model.layers[-3].register_forward_hook(add_steering_vectors_hook)
+        print("in llama rn")
+        model.model.layers[LAYER].register_forward_hook(add_steering_vectors_hook)
     elif isinstance(model, GPT2LMHeadModel):
-        model.transformer.h[-3].register_forward_hook(add_steering_vectors_hook)
+        model.transformer.h[LAYER].register_forward_hook(add_steering_vectors_hook)
     else:
         raise ValueError("Unsupported model type")
+    
+    inputs = tokenizer(
+        f"Solve the following problem: {n1} + {n2} + {n3} = ",
+        return_tensors="pt",
+        return_attention_mask=True
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()} # Move inputs to GPU 
+    
     post = tokenizer.decode(
         model.generate(
-            tokenizer(
-                f"Solve the following problem: {n1} + {n2} + {n3} = ",
-                return_tensors="pt",
-            )["input_ids"],
-            max_new_tokens=50,
+            input_ids = inputs["input_ids"],
+            attention_mask = inputs["attention_mask"],
+            max_new_tokens=150,
         )[0]
     )
+    
     print(f"post answer: {post}")
     print(f"answer: {answer}")
 
