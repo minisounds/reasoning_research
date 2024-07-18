@@ -49,7 +49,6 @@ def get_steering_vector(texts, model, tokenizer, layer_idx=LAYER):
 
     # Register hook for the specified layer
     if isinstance(model, LlamaForCausalLM):
-        print("in Llama rn")
         handle = model.model.layers[layer_idx].register_forward_hook(save_activation)
     elif isinstance(model, GPT2LMHeadModel):
         handle = model.transformer.h[layer_idx].register_forward_hook(save_activation)
@@ -76,14 +75,14 @@ def get_steering_vector(texts, model, tokenizer, layer_idx=LAYER):
         for act in activations
     ]
 
-    steering_vector = padded_activations[0] - padded_activations[1]
+    steering_vector = padded_activations[1] - padded_activations[0]
 
     return steering_vector
 
 
 # Dataset
-w_cot = f"Answer the following problems by thinking step by step"
-wo_cot = f"Answer the following problems by just providing the answer"
+w_cot = f"Answer the following problems by first explaining a general method to solve the problem, then providing the approach to find the exact answer."
+wo_cot = f"Answer the following problems by providing only the answer."
 
 prompts = [w_cot, wo_cot]
 
@@ -109,11 +108,12 @@ def add_steering_vectors_hook(module, input, output):
 
 
 def test_steering():
-    n1, n2, n3, answer = generate_addition_problem()  # insert new prompt here (can be loop in future)
+    # question, answer = generate_addition_problem()  # insert new prompt here (can be loop in future)
+    question = "What is the solution to the differential equation dy/dx = 5x^2 + 2 with boundary condition y(0) = 8?"
     
     # Generate tokens before steering
     inputs = tokenizer(
-        f"Solve the following problem: {n1} + {n2} + {n3} = ",
+        f"Solve the following problem: {question} = ",
         return_tensors="pt",
         return_attention_mask=True
     )
@@ -124,7 +124,7 @@ def test_steering():
         model.generate(
             input_ids = inputs["input_ids"],
             attention_mask = inputs["attention_mask"],
-            max_new_tokens=150,
+            max_new_tokens=300,
         )[0]
     )
     
@@ -139,7 +139,7 @@ def test_steering():
         raise ValueError("Unsupported model type")
     
     inputs = tokenizer(
-        f"Solve the following problem: {n1} + {n2} + {n3} = ",
+        f"Solve the following problem: {question} = ",
         return_tensors="pt",
         return_attention_mask=True
     )
@@ -149,12 +149,11 @@ def test_steering():
         model.generate(
             input_ids = inputs["input_ids"],
             attention_mask = inputs["attention_mask"],
-            max_new_tokens=150,
+            max_new_tokens=300,
         )[0]
     )
     
     print(f"post answer: {post}")
-    print(f"answer: {answer}")
-
+    # print(f"answer: {answer}")
 
 test_steering()
