@@ -32,15 +32,23 @@ config.use_cache = False
 # config = model.config
 # config.use_cache = False
 LAYER = 20
+INJ_COEF = 5
+w_cot_prompt = f"Answer the following problems by thinking step by step."
+wo_cot_prompt = f"Answer the following problems by providing only the answer."
 
-def get_steering_vector(texts, model, tokenizer, layer_idx=LAYER):
-    if len(texts) != 2:
-        raise ValueError(
-            "This function requires exactly two texts to compute the steering vector difference."
-        )
+tokenLen = lambda tokens: len(tokens["input_ids"][0])
 
+# returns new input_ids with padding of space character AND updates attention mask
+def pad_right(tensor, length):
+    space_token = tokenizer.encode(" ", add_special_tokens=False)[0]
+    space_tokens_tensor = torch.tensor([space_token] * (length - tokenLen(tensor)))
+    padded_tokens = torch.cat((tensor["input_ids"][0], space_tokens_tensor), dim=0)
+    attention_mask = torch.cat((tensor["attention_mask"][0], torch.zeros_like(space_tokens_tensor)), dim=0)
+    return padded_tokens, attention_mask
+
+# TODO: removed "texts" put positive and negative strings directly in here
+def get_steering_vector(model, tokenizer, layer_idx=LAYER):
     activations = []
-
     # Function to save activations
     def save_activation(model, input, output):
         activations.append(
@@ -54,19 +62,27 @@ def get_steering_vector(texts, model, tokenizer, layer_idx=LAYER):
         handle = model.transformer.h[layer_idx].register_forward_hook(save_activation)
     else:
         raise ValueError("Unsupported model type")
+    
     # Process both texts and capture activations
-    for text in texts:
-        inputs = tokenizer(
-            text, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True
-        )
-        inputs = {k: v.to(device) for k, v in inputs.items()} # Move inputs to GPU 
+    w_cot = tokenizer(w_cot_prompt, return_tensors="pt", padding=False, truncation=True, max_length=512, return_attention_mask=True)
+    wo_cot = tokenizer(wo_cot_prompt, return_tensors="pt", padding=False, truncation=True, max_length=512, return_attention_mask=True)
+    
+    # manual padding 
+    l = max(tokenLen(w_cot), tokenLen(wo_cot))
+    w_cot["input_ids"][0], w_cot["attention_mask"][0] = pad_right(w_cot, l)[0], pad_right(w_cot, l)[1]
+    wo_cot["input_ids"][0], wo_cot["attention_mask"][0] = pad_right(wo_cot, l)[0], pad_right(wo_cot, l)[1]
+    
+    w_cot.to(device)
+    wo_cot.to(device)
 
-        # Perform forward pass to trigger hooks
-        with torch.no_grad():
-            _ = model(**inputs)
+    # Perform forward pass to trigger hooks
+    with torch.no_grad():
+        _ = model(**w_cot)
+        _ = model(**wo_cot)
 
     # Remove the hook after processing both texts
     handle.remove()
+    # TODO: make sure that save_activation hook is deleted after use
 
     # Ensure both activation tensors have the same sequence length
     max_seq_length = max(activations[0].shape[1], activations[1].shape[1])
@@ -76,17 +92,11 @@ def get_steering_vector(texts, model, tokenizer, layer_idx=LAYER):
     ]
 
     steering_vector = padded_activations[1] - padded_activations[0]
-
+    steering_vector = INJ_COEF * steering_vector
     return steering_vector
 
-
 # Dataset
-w_cot = f"Answer the following problems by first explaining a general method to solve the problem, then providing the approach to find the exact answer."
-wo_cot = f"Answer the following problems by providing only the answer."
-
-prompts = [w_cot, wo_cot]
-
-steering_vector = get_steering_vector(prompts, model, tokenizer)
+steering_vector = get_steering_vector(model, tokenizer)
 
 def add_steering_vectors_hook(module, input, output):
     global steering_vector  # Ensure this is accessible
@@ -109,11 +119,11 @@ def add_steering_vectors_hook(module, input, output):
 
 def test_steering():
     # question, answer = generate_addition_problem()  # insert new prompt here (can be loop in future)
-    question = "What is the solution to the differential equation dy/dx = 5x^2 + 2 with boundary condition y(0) = 8?"
+    question = "What is the solution to 355 + 367?"
     
     # Generate tokens before steering
     inputs = tokenizer(
-        f"Solve the following problem: {question} = ",
+        f"Solve the following problem: {question}",
         return_tensors="pt",
         return_attention_mask=True
     )
@@ -139,7 +149,7 @@ def test_steering():
         raise ValueError("Unsupported model type")
     
     inputs = tokenizer(
-        f"Solve the following problem: {question} = ",
+        f"Solve the following problem: {question}",
         return_tensors="pt",
         return_attention_mask=True
     )
