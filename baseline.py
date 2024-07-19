@@ -25,7 +25,7 @@ def ask_question(question):
         output = model.generate(
             input_ids=inputs["input_ids"],
             attention_mask=inputs["attention_mask"],
-            max_new_tokens=250,
+            max_new_tokens=300,
         )
 
     answer = tokenizer.decode(output[0], skip_special_tokens=True)
@@ -35,10 +35,11 @@ def ask_question(question):
 def test():
     q, ans = generate_addition_problem()
     # question = f"Solve the following problem: {q} = "
-    question = "What is the solution to the differential equation dy/dx = 5x^2 + 2 with boundary condition y(0) = 8?"
+    question = "Hi, how are you?"
+    # question = "What is the answer to this riddle: Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
     answer = ask_question(question)
     print(f"Question: {question}")
     print(f"Model Answer: {answer}")
-    print(f"Actual answer: {ans}")
+    print(f"Actual Answer: Bob is sitting in the middle.")
 
 test()

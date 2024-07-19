@@ -32,9 +32,9 @@ config.use_cache = False
 # config = model.config
 # config.use_cache = False
 LAYER = 20
-INJ_COEF = 5
-w_cot_prompt = f"Answer the following problems by thinking step by step."
-wo_cot_prompt = f"Answer the following problems by providing only the answer."
+INJ_COEF = 15
+w_cot_prompt = f"Think step by step."
+wo_cot_prompt = f"Answer immediately."
 
 tokenLen = lambda tokens: len(tokens["input_ids"][0])
 
@@ -69,8 +69,10 @@ def get_steering_vector(model, tokenizer, layer_idx=LAYER):
     
     # manual padding 
     l = max(tokenLen(w_cot), tokenLen(wo_cot))
-    w_cot["input_ids"][0], w_cot["attention_mask"][0] = pad_right(w_cot, l)[0], pad_right(w_cot, l)[1]
-    wo_cot["input_ids"][0], wo_cot["attention_mask"][0] = pad_right(wo_cot, l)[0], pad_right(wo_cot, l)[1]
+    padded_cot = pad_right(w_cot, l)
+    padded_wo_cot = pad_right(wo_cot, l)
+    w_cot["input_ids"][0], w_cot["attention_mask"][0] = padded_cot[0].unsqueeze(0), padded_cot[1].unsqueeze(0)
+    wo_cot["input_ids"][0], wo_cot["attention_mask"][0] = padded_wo_cot[0].unsqueeze(0), padded_wo_cot[1].unsqueeze(0)
     
     w_cot.to(device)
     wo_cot.to(device)
@@ -117,10 +119,10 @@ def add_steering_vectors_hook(module, input, output):
     return output[0] + adjusted_steering_vector, output[1]
 
 
-def test_steering():
+def test_steering(num_responses=3):
     # question, answer = generate_addition_problem()  # insert new prompt here (can be loop in future)
-    question = "What is the solution to 355 + 367?"
-    
+    question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
+    answer = "Bob is sitting in the middle"
     # Generate tokens before steering
     inputs = tokenizer(
         f"Solve the following problem: {question}",
@@ -129,16 +131,20 @@ def test_steering():
     )
     inputs = {k: v.to(device) for k, v in inputs.items()} # Move inputs to GPU 
     
-    # generate using generated tokens 
-    pre = tokenizer.decode(
-        model.generate(
-            input_ids = inputs["input_ids"],
-            attention_mask = inputs["attention_mask"],
-            max_new_tokens=300,
-        )[0]
-    )
+    # Generate multiple responses before steering
+    pre_responses = []
+    with torch.no_grad():
+        for _ in range(num_responses):
+            output = model.generate(
+                input_ids=inputs["input_ids"],
+                attention_mask=inputs["attention_mask"],
+                max_new_tokens=400,
+            )
+            pre_responses.append(tokenizer.decode(output[0], skip_special_tokens=True))
     
-    print(f"pre answer: {pre}")
+    print("Pre-steering responses:")
+    for i, pre in enumerate(pre_responses, 1):
+        print(f"Pre answer {i}: {pre}")
     
     if isinstance(model, LlamaForCausalLM):
         print("in llama rn")
@@ -155,15 +161,21 @@ def test_steering():
     )
     inputs = {k: v.to(device) for k, v in inputs.items()} # Move inputs to GPU 
     
-    post = tokenizer.decode(
-        model.generate(
-            input_ids = inputs["input_ids"],
-            attention_mask = inputs["attention_mask"],
-            max_new_tokens=300,
-        )[0]
-    )
+    # Generate multiple responses after steering
+    post_responses = []
+    with torch.no_grad():
+        for _ in range(num_responses):
+            output = model.generate(
+                input_ids=inputs["input_ids"],
+                attention_mask=inputs["attention_mask"],
+                max_new_tokens=300,
+            )
+            post_responses.append(tokenizer.decode(output[0], skip_special_tokens=True))
     
-    print(f"post answer: {post}")
+    print("Post-steering responses:")
+    for i, post in enumerate(post_responses, 1):
+        print(f"Post answer {i}: {post}")
+    
     # print(f"answer: {answer}")
 
 test_steering()
