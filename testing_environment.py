@@ -31,20 +31,10 @@ config.use_cache = False
 # tokenizer.pad_token = tokenizer.eos_token
 # config = model.config
 # config.use_cache = False
-LAYER = 20
-INJ_COEF = 15
-w_cot_prompt = f"Think step by step."
-wo_cot_prompt = f"Answer immediately."
-
-tokenLen = lambda tokens: len(tokens["input_ids"][0])
-
-# returns new input_ids with padding of space character AND updates attention mask
-def pad_right(tensor, length):
-    space_token = tokenizer.encode(" ", add_special_tokens=False)[0]
-    space_tokens_tensor = torch.tensor([space_token] * (length - tokenLen(tensor)))
-    padded_tokens = torch.cat((tensor["input_ids"][0], space_tokens_tensor), dim=0)
-    attention_mask = torch.cat((tensor["attention_mask"][0], torch.zeros_like(space_tokens_tensor)), dim=0)
-    return padded_tokens, attention_mask
+LAYER = 15
+INJ_COEF = 10
+w_cot_prompt = f"Answer the following question by thinking step by step."
+wo_cot_prompt = f"Answer the following question by answering immediately."
 
 # TODO: removed "texts" put positive and negative strings directly in here
 def get_steering_vector(model, tokenizer, layer_idx=LAYER):
@@ -64,15 +54,8 @@ def get_steering_vector(model, tokenizer, layer_idx=LAYER):
         raise ValueError("Unsupported model type")
     
     # Process both texts and capture activations
-    w_cot = tokenizer(w_cot_prompt, return_tensors="pt", padding=False, truncation=True, max_length=512, return_attention_mask=True)
-    wo_cot = tokenizer(wo_cot_prompt, return_tensors="pt", padding=False, truncation=True, max_length=512, return_attention_mask=True)
-    
-    # manual padding 
-    l = max(tokenLen(w_cot), tokenLen(wo_cot))
-    padded_cot = pad_right(w_cot, l)
-    padded_wo_cot = pad_right(wo_cot, l)
-    w_cot["input_ids"][0], w_cot["attention_mask"][0] = padded_cot[0].unsqueeze(0), padded_cot[1].unsqueeze(0)
-    wo_cot["input_ids"][0], wo_cot["attention_mask"][0] = padded_wo_cot[0].unsqueeze(0), padded_wo_cot[1].unsqueeze(0)
+    w_cot = tokenizer(w_cot_prompt, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+    wo_cot = tokenizer(wo_cot_prompt, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
     
     w_cot.to(device)
     wo_cot.to(device)

@@ -3,6 +3,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaConfig
 from benchmarks.addition_benchmark import generate_addition_problem
 
 # Set up the device
+print(torch.cuda.is_available)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load the model and tokenizer
@@ -25,7 +26,7 @@ def ask_question(question):
         output = model.generate(
             input_ids=inputs["input_ids"],
             attention_mask=inputs["attention_mask"],
-            max_new_tokens=300,
+            max_new_tokens=200,
         )
 
     answer = tokenizer.decode(output[0], skip_special_tokens=True)
@@ -35,11 +36,11 @@ def ask_question(question):
 def test():
     q, ans = generate_addition_problem()
     # question = f"Solve the following problem: {q} = "
-    question = "Hi, how are you?"
+    question = "What is the capital of France?"
     # question = "What is the answer to this riddle: Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
     answer = ask_question(question)
     print(f"Question: {question}")
     print(f"Model Answer: {answer}")
-    print(f"Actual Answer: Bob is sitting in the middle.")
+    print(f"Actual Answer: B")
 
 test()
