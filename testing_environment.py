@@ -17,13 +17,13 @@ from benchmarks.addition_benchmark import (
 # Set up the device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B")
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 model = model.to(device)  # Move model to GPU
 
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B")
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.pad_token_id = tokenizer.eos_token_id
-config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B")
+config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 config.use_cache = False
 
 # model = AutoModelForCausalLM.from_pretrained("gpt2")
@@ -32,8 +32,8 @@ config.use_cache = False
 # config = model.config
 # config.use_cache = False
 LAYER = 15
-INJ_COEF = 10
-w_cot_prompt = f"Answer the following question by thinking step by step."
+INJ_COEF = 3
+w_cot_prompt = f"Answer the following question first by creating a plan to solve, then thinking step by step."
 wo_cot_prompt = f"Answer the following question by answering immediately."
 
 # TODO: removed "texts" put positive and negative strings directly in here
@@ -103,12 +103,14 @@ def add_steering_vectors_hook(module, input, output):
 
 
 def test_steering(num_responses=3):
-    # question, answer = generate_addition_problem()  # insert new prompt here (can be loop in future)
     question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
     answer = "Bob is sitting in the middle"
+    system_instruction = "Solve the following problem."
+    full_prompt = f"{system_instruction}. \n\n Problem: {question} \n\n Solution: "
+    
     # Generate tokens before steering
     inputs = tokenizer(
-        f"Solve the following problem: {question}",
+        full_prompt,
         return_tensors="pt",
         return_attention_mask=True
     )
@@ -121,7 +123,10 @@ def test_steering(num_responses=3):
             output = model.generate(
                 input_ids=inputs["input_ids"],
                 attention_mask=inputs["attention_mask"],
-                max_new_tokens=400,
+                max_new_tokens=250,
+                # temperature=0.7,  # Adjust as needed
+                # top_p=0.9,        # Adjust as needed
+                # num_beams=3
             )
             pre_responses.append(tokenizer.decode(output[0], skip_special_tokens=True))
     
@@ -130,15 +135,14 @@ def test_steering(num_responses=3):
         print(f"Pre answer {i}: {pre}")
     
     if isinstance(model, LlamaForCausalLM):
-        print("in llama rn")
-        model.model.layers[LAYER].register_forward_hook(add_steering_vectors_hook)
+        handle = model.model.layers[LAYER].register_forward_hook(add_steering_vectors_hook)
     elif isinstance(model, GPT2LMHeadModel):
-        model.transformer.h[LAYER].register_forward_hook(add_steering_vectors_hook)
+        handle = model.transformer.h[LAYER].register_forward_hook(add_steering_vectors_hook)
     else:
         raise ValueError("Unsupported model type")
     
     inputs = tokenizer(
-        f"Solve the following problem: {question}",
+        full_prompt,
         return_tensors="pt",
         return_attention_mask=True
     )
@@ -151,13 +155,16 @@ def test_steering(num_responses=3):
             output = model.generate(
                 input_ids=inputs["input_ids"],
                 attention_mask=inputs["attention_mask"],
-                max_new_tokens=300,
+                max_new_tokens=250,
             )
             post_responses.append(tokenizer.decode(output[0], skip_special_tokens=True))
     
     print("Post-steering responses:")
     for i, post in enumerate(post_responses, 1):
         print(f"Post answer {i}: {post}")
+    
+    # Remove the hook after processing both texts
+    handle.remove()
     
     # print(f"answer: {answer}")
 
