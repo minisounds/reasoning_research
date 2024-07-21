@@ -32,9 +32,9 @@ config.use_cache = False
 # config = model.config
 # config.use_cache = False
 LAYER = 15
-INJ_COEF = 3
-w_cot_prompt = f"Answer the following question first by creating a plan to solve, then thinking step by step."
-wo_cot_prompt = f"Answer the following question by answering immediately."
+INJ_COEF = 2
+w_cot_prompt = f"You are a helpful AI assistant skilled in problem-solving. Provide clear, step-by-step solutions."
+wo_cot_prompt = f"You are an AI Assistant skilled in providing the answer immediately. Provide an immediate solution to questions without further elaboration."
 
 # TODO: removed "texts" put positive and negative strings directly in here
 def get_steering_vector(model, tokenizer, layer_idx=LAYER):
