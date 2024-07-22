@@ -1,5 +1,6 @@
 # Load model directly
-import h5py
+import os
+import json
 import numpy as np
 from transformers import (
     AutoTokenizer,
@@ -9,6 +10,7 @@ from transformers import (
     GPT2LMHeadModel,
 )
 import torch
+from evaluate import grade_response
 from tqdm import tqdm
 from benchmarks.addition_benchmark import (
     generate_addition_problem,
@@ -31,6 +33,7 @@ config.use_cache = False
 # tokenizer.pad_token = tokenizer.eos_token
 # config = model.config
 # config.use_cache = False
+
 LAYER = 15
 INJ_COEF = 2
 w_cot_prompt = f"You are a helpful AI assistant skilled in problem-solving. Provide clear, step-by-step solutions."
@@ -101,7 +104,6 @@ def add_steering_vectors_hook(module, input, output):
     # Add the adjusted steering vector to the output
     return output[0] + adjusted_steering_vector, output[1]
 
-
 def test_steering(num_responses=3):
     question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
     answer = "Bob is sitting in the middle"
@@ -124,15 +126,16 @@ def test_steering(num_responses=3):
                 input_ids=inputs["input_ids"],
                 attention_mask=inputs["attention_mask"],
                 max_new_tokens=250,
-                # temperature=0.7,  # Adjust as needed
-                # top_p=0.9,        # Adjust as needed
-                # num_beams=3
             )
             pre_responses.append(tokenizer.decode(output[0], skip_special_tokens=True))
     
     print("Pre-steering responses:")
+    pre_scores = []
     for i, pre in enumerate(pre_responses, 1):
-        print(f"Pre answer {i}: {pre}")
+        eval_score = grade_response(pre, question)
+        pre_scores.append(int(eval_score))
+        print(f"Pre evaluation {i}: {eval_score}")
+        # print(f"Pre answer {i}: {pre}")
     
     if isinstance(model, LlamaForCausalLM):
         handle = model.model.layers[LAYER].register_forward_hook(add_steering_vectors_hook)
@@ -152,20 +155,31 @@ def test_steering(num_responses=3):
     post_responses = []
     with torch.no_grad():
         for _ in range(num_responses):
-            output = model.generate(
-                input_ids=inputs["input_ids"],
-                attention_mask=inputs["attention_mask"],
-                max_new_tokens=250,
-            )
+            output = model.generate(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"], max_new_tokens=250,)
             post_responses.append(tokenizer.decode(output[0], skip_special_tokens=True))
     
     print("Post-steering responses:")
+    post_scores = []
     for i, post in enumerate(post_responses, 1):
-        print(f"Post answer {i}: {post}")
+        eval_score = grade_response(post, question)
+        post_scores.append(int(eval_score))
+        print(f"Post evaluation {i}: {eval_score}")
+        # print(f"Post answer {i}: {post}. Post evaluation: ")
     
     # Remove the hook after processing both texts
     handle.remove()
     
-    # print(f"answer: {answer}")
+    results = {
+        "pre_responses": pre_responses,
+        "pre_scores": pre_scores,
+        "post_responses": post_responses,
+        "post_scores": post_scores,
+        "avg_pre": sum(pre_scores) / len(pre_scores),
+        "avg_post": sum(post_scores) / len(post_scores),
+    }
+    
+    with open("res/scores.json", "w") as f: 
+        json.dump(results, f, indent = 4)
+    
 
 test_steering()
