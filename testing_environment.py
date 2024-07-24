@@ -1,5 +1,6 @@
 # Load model directly
 import os
+import uuid
 import json
 import numpy as np
 from transformers import (
@@ -10,7 +11,7 @@ from transformers import (
     GPT2LMHeadModel,
 )
 import torch
-from evaluate import grade_response
+from evaluate_response import grade_response
 from tqdm import tqdm
 from benchmarks.addition_benchmark import (
     generate_addition_problem,
@@ -70,7 +71,7 @@ def get_steering_vector(model, tokenizer, layer_idx=LAYER):
 
     # Remove the hook after processing both texts
     handle.remove()
-    # TODO: make sure that save_activation hook is deleted after use
+
 
     # Ensure both activation tensors have the same sequence length
     max_seq_length = max(activations[0].shape[1], activations[1].shape[1])
@@ -168,18 +169,105 @@ def test_steering(num_responses=3):
     
     # Remove the hook after processing both texts
     handle.remove()
-    
+    avg_pre = sum(pre_scores) / len(pre_scores)
+    avg_post = sum(post_scores) / len(post_scores)
+    result_id = str(uuid.uuid4())
     results = {
+        "result_id": result_id,
         "pre_responses": pre_responses,
         "pre_scores": pre_scores,
         "post_responses": post_responses,
         "post_scores": post_scores,
-        "avg_pre": sum(pre_scores) / len(pre_scores),
-        "avg_post": sum(post_scores) / len(post_scores),
+        "avg_pre": avg_pre,
+        "avg_post": avg_post,
     }
     
     with open("res/scores.json", "w") as f: 
         json.dump(results, f, indent = 4)
     
 
-test_steering()
+    return avg_post, post_responses, result_id
+
+
+def grid_search(layer_range=34, coeff_range=15, num_responses=3):
+    question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
+    answer = "Bob is sitting in the middle"
+    system_instruction = "Solve the following problem."
+    full_prompt = f"{system_instruction}. \n\n Problem: {question} \n\n Solution: "
+    
+    # Generate tokens before steering
+    inputs = tokenizer(
+        full_prompt,
+        return_tensors="pt",
+        return_attention_mask=True
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()} # Move inputs to GPU 
+    
+    # Generate multiple responses before steering
+    pre_responses = []
+    with torch.no_grad():
+        for _ in range(num_responses):
+            output = model.generate(
+                input_ids=inputs["input_ids"],
+                attention_mask=inputs["attention_mask"],
+                max_new_tokens=250,
+            )
+            pre_responses.append(tokenizer.decode(output[0], skip_special_tokens=True))
+    
+    print("Pre-steering responses:")
+    pre_scores = []
+    for i, pre in enumerate(pre_responses, 1):
+        eval_score = grade_response(pre, question)
+        pre_scores.append(int(eval_score))
+        print(f"Pre evaluation {i}: {eval_score}")
+        # print(f"Pre answer {i}: {pre}")
+    
+    if isinstance(model, LlamaForCausalLM):
+        handle = model.model.layers[LAYER].register_forward_hook(add_steering_vectors_hook)
+    elif isinstance(model, GPT2LMHeadModel):
+        handle = model.transformer.h[LAYER].register_forward_hook(add_steering_vectors_hook)
+    else:
+        raise ValueError("Unsupported model type")
+    
+    inputs = tokenizer(
+        full_prompt,
+        return_tensors="pt",
+        return_attention_mask=True
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()} # Move inputs to GPU 
+    
+    # Generate multiple responses after steering
+    post_responses = []
+    with torch.no_grad():
+        for _ in range(num_responses):
+            output = model.generate(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"], max_new_tokens=250,)
+            post_responses.append(tokenizer.decode(output[0], skip_special_tokens=True))
+    
+    print("Post-steering responses:")
+    post_scores = []
+    for i, post in enumerate(post_responses, 1):
+        eval_score = grade_response(post, question)
+        post_scores.append(int(eval_score))
+        print(f"Post evaluation {i}: {eval_score}")
+        # print(f"Post answer {i}: {post}. Post evaluation: ")
+    
+    # Remove the hook after processing both texts
+    handle.remove()
+    avg_pre = sum(pre_scores) / len(pre_scores)
+    avg_post = sum(post_scores) / len(post_scores)
+    result_id = str(uuid.uuid4())
+    results = {
+        "result_id": result_id,
+        "pre_responses": pre_responses,
+        "pre_scores": pre_scores,
+        "post_responses": post_responses,
+        "post_scores": post_scores,
+        "avg_pre": avg_pre,
+        "avg_post": avg_post,
+    }
+    
+    with open("res/scores.json", "w") as f: 
+        json.dump(results, f, indent = 4)
+    
+
+    return avg_post, post_responses, result_id
