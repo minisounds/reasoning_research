@@ -1,0 +1,127 @@
+Collecting mistral_inference
+  Downloading mistral_inference-1.3.1-py3-none-any.whl.metadata (14 kB)
+Collecting mamba-ssm
+  Downloading mamba_ssm-2.2.2.tar.gz (85 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 85.4/85.4 kB 3.9 MB/s eta 0:00:00
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Collecting causal-conv1d
+  Downloading causal_conv1d-1.4.0.tar.gz (9.3 kB)
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Collecting fire>=0.6.0 (from mistral_inference)
+  Downloading fire-0.6.0.tar.gz (88 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 88.4/88.4 kB 26.7 MB/s eta 0:00:00
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Collecting mistral_common<2.0.0,>=1.3.0 (from mistral_inference)
+  Downloading mistral_common-1.3.3-py3-none-any.whl.metadata (4.1 kB)
+Requirement already satisfied: safetensors>=0.4.0 in /usr/local/lib/python3.10/dist-packages (from mistral_inference) (0.4.3)
+Collecting simple-parsing>=0.1.5 (from mistral_inference)
+  Downloading simple_parsing-0.1.5-py3-none-any.whl.metadata (7.7 kB)
+Collecting xformers>=0.0.24 (from mistral_inference)
+  Downloading xformers-0.0.27-cp310-cp310-manylinux2014_x86_64.whl.metadata (1.0 kB)
+Requirement already satisfied: torch in /usr/local/lib/python3.10/dist-packages (from mamba-ssm) (2.1.0+cu118)
+Requirement already satisfied: packaging in /usr/local/lib/python3.10/dist-packages (from mamba-ssm) (23.2)
+Collecting ninja (from mamba-ssm)
+  Downloading ninja-1.11.1.1-py2.py3-none-manylinux1_x86_64.manylinux_2_5_x86_64.whl.metadata (5.3 kB)
+Collecting einops (from mamba-ssm)
+  Downloading einops-0.8.0-py3-none-any.whl.metadata (12 kB)
+Requirement already satisfied: triton in /usr/local/lib/python3.10/dist-packages (from mamba-ssm) (2.1.0)
+Requirement already satisfied: transformers in /usr/local/lib/python3.10/dist-packages (from mamba-ssm) (4.43.2)
+Requirement already satisfied: six in /usr/lib/python3/dist-packages (from fire>=0.6.0->mistral_inference) (1.16.0)
+Collecting termcolor (from fire>=0.6.0->mistral_inference)
+  Downloading termcolor-2.4.0-py3-none-any.whl.metadata (6.1 kB)
+Collecting jsonschema==4.21.1 (from mistral_common<2.0.0,>=1.3.0->mistral_inference)
+  Downloading jsonschema-4.21.1-py3-none-any.whl.metadata (7.8 kB)
+Collecting pydantic==2.6.1 (from mistral_common<2.0.0,>=1.3.0->mistral_inference)
+  Downloading pydantic-2.6.1-py3-none-any.whl.metadata (83 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 83.5/83.5 kB 20.0 MB/s eta 0:00:00
+Collecting sentencepiece==0.2.0 (from mistral_common<2.0.0,>=1.3.0->mistral_inference)
+  Downloading sentencepiece-0.2.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (7.7 kB)
+Collecting tiktoken<0.8.0,>=0.7.0 (from mistral_common<2.0.0,>=1.3.0->mistral_inference)
+  Downloading tiktoken-0.7.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)
+Requirement already satisfied: typing-extensions<5.0.0,>=4.11.0 in /usr/local/lib/python3.10/dist-packages (from mistral_common<2.0.0,>=1.3.0->mistral_inference) (4.12.2)
+Requirement already satisfied: attrs>=22.2.0 in /usr/local/lib/python3.10/dist-packages (from jsonschema==4.21.1->mistral_common<2.0.0,>=1.3.0->mistral_inference) (23.1.0)
+Requirement already satisfied: jsonschema-specifications>=2023.03.6 in /usr/local/lib/python3.10/dist-packages (from jsonschema==4.21.1->mistral_common<2.0.0,>=1.3.0->mistral_inference) (2023.7.1)
+Requirement already satisfied: referencing>=0.28.4 in /usr/local/lib/python3.10/dist-packages (from jsonschema==4.21.1->mistral_common<2.0.0,>=1.3.0->mistral_inference) (0.30.2)
+Requirement already satisfied: rpds-py>=0.7.1 in /usr/local/lib/python3.10/dist-packages (from jsonschema==4.21.1->mistral_common<2.0.0,>=1.3.0->mistral_inference) (0.12.0)
+Requirement already satisfied: annotated-types>=0.4.0 in /usr/local/lib/python3.10/dist-packages (from pydantic==2.6.1->mistral_common<2.0.0,>=1.3.0->mistral_inference) (0.7.0)
+Collecting pydantic-core==2.16.2 (from pydantic==2.6.1->mistral_common<2.0.0,>=1.3.0->mistral_inference)
+  Downloading pydantic_core-2.16.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.5 kB)
+Collecting docstring-parser~=0.15 (from simple-parsing>=0.1.5->mistral_inference)
+  Downloading docstring_parser-0.16-py3-none-any.whl.metadata (3.0 kB)
+Requirement already satisfied: numpy in /usr/local/lib/python3.10/dist-packages (from xformers>=0.0.24->mistral_inference) (1.24.1)
+Collecting torch (from mamba-ssm)
+  Downloading torch-2.3.1-cp310-cp310-manylinux1_x86_64.whl.metadata (26 kB)
+Requirement already satisfied: filelock in /usr/local/lib/python3.10/dist-packages (from torch->mamba-ssm) (3.9.0)
+Requirement already satisfied: sympy in /usr/local/lib/python3.10/dist-packages (from torch->mamba-ssm) (1.12)
+Requirement already satisfied: networkx in /usr/local/lib/python3.10/dist-packages (from torch->mamba-ssm) (3.0)
+Requirement already satisfied: jinja2 in /usr/local/lib/python3.10/dist-packages (from torch->mamba-ssm) (3.1.2)
+Requirement already satisfied: fsspec in /usr/local/lib/python3.10/dist-packages (from torch->mamba-ssm) (2024.6.1)
+Collecting nvidia-cuda-nvrtc-cu12==12.1.105 (from torch->mamba-ssm)
+  Downloading nvidia_cuda_nvrtc_cu12-12.1.105-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)
+Collecting nvidia-cuda-runtime-cu12==12.1.105 (from torch->mamba-ssm)
+  Downloading nvidia_cuda_runtime_cu12-12.1.105-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)
+Collecting nvidia-cuda-cupti-cu12==12.1.105 (from torch->mamba-ssm)
+  Downloading nvidia_cuda_cupti_cu12-12.1.105-py3-none-manylinux1_x86_64.whl.metadata (1.6 kB)
+Collecting nvidia-cudnn-cu12==8.9.2.26 (from torch->mamba-ssm)
+  Downloading nvidia_cudnn_cu12-8.9.2.26-py3-none-manylinux1_x86_64.whl.metadata (1.6 kB)
+Collecting nvidia-cublas-cu12==12.1.3.1 (from torch->mamba-ssm)
+  Downloading nvidia_cublas_cu12-12.1.3.1-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)
+Collecting nvidia-cufft-cu12==11.0.2.54 (from torch->mamba-ssm)
+  Downloading nvidia_cufft_cu12-11.0.2.54-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)
+Collecting nvidia-curand-cu12==10.3.2.106 (from torch->mamba-ssm)
+  Downloading nvidia_curand_cu12-10.3.2.106-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)
+Collecting nvidia-cusolver-cu12==11.4.5.107 (from torch->mamba-ssm)
+  Downloading nvidia_cusolver_cu12-11.4.5.107-py3-none-manylinux1_x86_64.whl.metadata (1.6 kB)
+Collecting nvidia-cusparse-cu12==12.1.0.106 (from torch->mamba-ssm)
+  Downloading nvidia_cusparse_cu12-12.1.0.106-py3-none-manylinux1_x86_64.whl.metadata (1.6 kB)
+Collecting nvidia-nccl-cu12==2.20.5 (from torch->mamba-ssm)
+  Downloading nvidia_nccl_cu12-2.20.5-py3-none-manylinux2014_x86_64.whl.metadata (1.8 kB)
+Collecting nvidia-nvtx-cu12==12.1.105 (from torch->mamba-ssm)
+  Downloading nvidia_nvtx_cu12-12.1.105-py3-none-manylinux1_x86_64.whl.metadata (1.7 kB)
+Collecting triton (from mamba-ssm)
+  Downloading triton-2.3.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.4 kB)
+Collecting nvidia-nvjitlink-cu12 (from nvidia-cusolver-cu12==11.4.5.107->torch->mamba-ssm)
+  Downloading nvidia_nvjitlink_cu12-12.5.82-py3-none-manylinux2014_x86_64.whl.metadata (1.5 kB)
+Requirement already satisfied: huggingface-hub<1.0,>=0.23.2 in /usr/local/lib/python3.10/dist-packages (from transformers->mamba-ssm) (0.24.2)
+Requirement already satisfied: pyyaml>=5.1 in /usr/local/lib/python3.10/dist-packages (from transformers->mamba-ssm) (6.0.1)
+Requirement already satisfied: regex!=2019.12.17 in /usr/local/lib/python3.10/dist-packages (from transformers->mamba-ssm) (2024.7.24)
+Requirement already satisfied: requests in /usr/local/lib/python3.10/dist-packages (from transformers->mamba-ssm) (2.31.0)
+Requirement already satisfied: tokenizers<0.20,>=0.19 in /usr/local/lib/python3.10/dist-packages (from transformers->mamba-ssm) (0.19.1)
+Requirement already satisfied: tqdm>=4.27 in /usr/local/lib/python3.10/dist-packages (from transformers->mamba-ssm) (4.66.4)
+Requirement already satisfied: charset-normalizer<4,>=2 in /usr/local/lib/python3.10/dist-packages (from requests->transformers->mamba-ssm) (2.1.1)
+Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.10/dist-packages (from requests->transformers->mamba-ssm) (3.4)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.10/dist-packages (from requests->transformers->mamba-ssm) (1.26.13)
+Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.10/dist-packages (from requests->transformers->mamba-ssm) (2022.12.7)
+Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.10/dist-packages (from jinja2->torch->mamba-ssm) (2.1.2)
+Requirement already satisfied: mpmath>=0.19 in /usr/local/lib/python3.10/dist-packages (from sympy->torch->mamba-ssm) (1.3.0)
+Downloading mistral_inference-1.3.1-py3-none-any.whl (25 kB)
+Downloading mistral_common-1.3.3-py3-none-any.whl (3.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 73.0 MB/s eta 0:00:00
+Downloading jsonschema-4.21.1-py3-none-any.whl (85 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 85.5/85.5 kB 18.8 MB/s eta 0:00:00
+Downloading pydantic-2.6.1-py3-none-any.whl (394 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 394.8/394.8 kB 44.3 MB/s eta 0:00:00
+Downloading sentencepiece-0.2.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 109.7 MB/s eta 0:00:00
+Downloading pydantic_core-2.16.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 104.2 MB/s eta 0:00:00
+Downloading simple_parsing-0.1.5-py3-none-any.whl (113 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 113.6/113.6 kB 28.3 MB/s eta 0:00:00
+Downloading xformers-0.0.27-cp310-cp310-manylinux2014_x86_64.whl (164.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 164.1/164.1 MB 51.5 MB/s eta 0:00:00
+Downloading torch-2.3.1-cp310-cp310-manylinux1_x86_64.whl (779.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 779.1/779.1 MB 16.1 MB/s eta 0:00:00
+Downloading triton-2.3.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (168.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 168.1/168.1 MB 56.0 MB/s eta 0:00:00
+Downloading nvidia_cublas_cu12-12.1.3.1-py3-none-manylinux1_x86_64.whl (410.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 410.6/410.6 MB 28.0 MB/s eta 0:00:00
+Downloading nvidia_cuda_cupti_cu12-12.1.105-py3-none-manylinux1_x86_64.whl (14.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.1/14.1 MB 156.0 MB/s eta 0:00:00
+Downloading nvidia_cuda_nvrtc_cu12-12.1.105-py3-none-manylinux1_x86_64.whl (23.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 23.7/23.7 MB 148.0 MB/s eta 0:00:00
+Downloading nvidia_cuda_runtime_cu12-12.1.105-py3-none-manylinux1_x86_64.whl (823 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 823.6/823.6 kB 93.7 MB/s eta 0:00:00
+Downloading nvidia_cudnn_cu12-8.9.2.26-py3-none-manylinux1_x86_64.whl (731.7 MB)
