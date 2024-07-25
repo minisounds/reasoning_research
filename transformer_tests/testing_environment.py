@@ -11,7 +11,7 @@ from transformers import (
     GPT2LMHeadModel,
 )
 import torch
-from evaluate_response import grade_response
+from transformer_tests.evaluate_response import grade_response
 from tqdm import tqdm
 from benchmarks.addition_benchmark import (
     generate_addition_problem,

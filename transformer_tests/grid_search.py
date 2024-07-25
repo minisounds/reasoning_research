@@ -11,7 +11,7 @@ from transformers import (
     GPT2LMHeadModel,
 )
 import torch
-from evaluate_response import grade_response
+from transformer_tests.evaluate_response import grade_response
 from tqdm import tqdm
 from benchmarks.addition_benchmark import (
     generate_addition_problem,
@@ -94,8 +94,6 @@ def add_steering_vectors_hook(steering_vector):
             )
         return output[0] + adjusted_steering_vector, output[1]
     return hook
-
-
     
 def post_steering(model, tokenizer, layer, steering_vector):
     question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
