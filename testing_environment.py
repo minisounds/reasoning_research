@@ -188,4 +188,47 @@ def test_steering(num_responses=3):
 
     return avg_post, post_responses, result_id
 
-test_steering()
+
+def post_steering():
+    question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
+    full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+    
+    inputs = tokenizer(
+        full_prompt,
+        return_tensors="pt",
+        return_attention_mask=True
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()} # Move inputs to GPU 
+    
+    if isinstance(model, LlamaForCausalLM):
+        handle = model.model.layers[LAYER].register_forward_hook(add_steering_vectors_hook)
+    else:
+        raise ValueError("Unsupported model type")
+    
+    # Generate multiple responses after steering
+    post_responses = []
+    with torch.no_grad():
+        for _ in range(5): 
+            output = model.generate(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"], max_new_tokens=250,)
+            post_responses.append(tokenizer.decode(output[0], skip_special_tokens=True))
+    
+    post_scores = []
+    for i, post in enumerate(post_responses, 1):
+        eval_score = grade_response(post, question)
+        post_scores.append(int(eval_score))
+    
+    # Remove the hook after processing both texts
+    handle.remove()
+    avg_post = sum(post_scores) / len(post_scores)
+    result_id = str(uuid.uuid4())
+    results = {
+        "result_id": result_id,
+        "post_responses": post_responses,
+        "post_scores": post_scores,
+        "avg_post": avg_post,
+    }
+    
+    with open("res/scores.json", "w") as f: 
+        json.dump(results, f, indent = 4)
+
+    return avg_post
