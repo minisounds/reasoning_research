@@ -40,7 +40,6 @@ INJ_COEF = 5
 w_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are a helpful AI Assistant who answers questions step by step.<|eot_id|>"
 wo_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are an AI Assistant who answers questions immediately without elaboration.<|eot_id|>"
 
-# TODO: removed "texts" put positive and negative strings directly in here
 def get_steering_vector(model, tokenizer, layer_idx, coeff):
     activations = []
     # Function to save activations
@@ -83,9 +82,6 @@ def get_steering_vector(model, tokenizer, layer_idx, coeff):
     steering_vector = coeff * steering_vector
     return steering_vector
 
-# Dataset
-steering_vector = get_steering_vector(model, tokenizer, LAYER, INJ_COEF)
-
 def add_steering_vectors_hook(steering_vector):
     def hook(module, input, output):
         current_seq_length = output[0].shape[1]
@@ -99,9 +95,10 @@ def add_steering_vectors_hook(steering_vector):
         return output[0] + adjusted_steering_vector, output[1]
     return hook
 
-def test_steering(model, tokenizer, layer, coeff, num_responses=3):
-    question, answer = generate_addition_problem()
-    system_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are an AI Assistant who answers questions immediately without elaboration.<|eot_id|>"
+
+    
+def post_steering(model, tokenizer, layer, steering_vector):
+    question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
     full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
     
     inputs = tokenizer(
@@ -111,62 +108,46 @@ def test_steering(model, tokenizer, layer, coeff, num_responses=3):
     )
     inputs = {k: v.to(device) for k, v in inputs.items()}
     
-    # Generate responses before steering
-    pre_responses = []
-    with torch.no_grad():
-        for _ in range(num_responses):
-            output = model.generate(
-                input_ids=inputs["input_ids"],
-                attention_mask=inputs["attention_mask"],
-                max_new_tokens=250,
-            )
-            pre_responses.append(tokenizer.decode(output[0], skip_special_tokens=True))
-    
-    pre_scores = [int(grade_response(pre, question)) for pre in pre_responses]
-    
-    # Generate steering vector and apply it
-    steering_vector = get_steering_vector(model, tokenizer, layer, coeff)
     if isinstance(model, LlamaForCausalLM):
         handle = model.model.layers[layer].register_forward_hook(add_steering_vectors_hook(steering_vector))
-    elif isinstance(model, GPT2LMHeadModel):
-        handle = model.transformer.h[layer].register_forward_hook(add_steering_vectors_hook(steering_vector))
     else:
         raise ValueError("Unsupported model type")
     
-    # Generate responses after steering
     post_responses = []
     with torch.no_grad():
-        for _ in range(num_responses):
-            output = model.generate(
-                input_ids=inputs["input_ids"],
-                attention_mask=inputs["attention_mask"],
-                max_new_tokens=250,
-            )
+        for _ in range(5): 
+            output = model.generate(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"], max_new_tokens=250,)
             post_responses.append(tokenizer.decode(output[0], skip_special_tokens=True))
     
     handle.remove()
     
     post_scores = [int(grade_response(post, question)) for post in post_responses]
-    
-    avg_pre = sum(pre_scores) / len(pre_scores)
     avg_post = sum(post_scores) / len(post_scores)
     
-    result_id = str(uuid.uuid4())
-    results = {
-        "result_id": result_id,
-        "layer": layer,
-        "coefficient": coeff,
-        "question": question,
-        "answer": answer,
-        "pre_responses": pre_responses,
-        "pre_scores": pre_scores,
-        "post_responses": post_responses,
-        "post_scores": post_scores,
-        "avg_pre": avg_pre,
-        "avg_post": avg_post,
-    }
+    return avg_post, post_responses, post_scores
+
+def grid_search(model, tokenizer, layer_range, coeff_range):
+    results = []
+    for layer in tqdm(range(layer_range), desc="Layers"):
+        for coeff in tqdm(range(coeff_range), desc="Coefficients", leave=False):
+            steering_vector = get_steering_vector(model, tokenizer, layer, coeff)
+            avg_post, post_responses, post_scores = post_steering(model, tokenizer, layer, steering_vector)
+            results.append({
+                "layer": layer,
+                "coefficient": coeff,
+                "avg_score": avg_post,
+                "responses": post_responses,
+                "scores": post_scores
+            })
     
-    with open(f"res/test_steering_results_{result_id}.json", "w") as f:
+    result_id = str(uuid.uuid4())
+    with open(f"res/grid_search_results_{result_id}.json", "w") as f:
         json.dump(results, f, indent=4)
     
-    return avg_pre, avg_post, result_id
+    return result_id
+
+# Usage
+layer_range = 5  # Adjust based on your model's architecture
+coeff_range = 3  # Adjust based on your desired range
+result_id = grid_search(model, tokenizer, layer_range, coeff_range)
+print(f"Grid search completed. Results saved with ID: {result_id}")
