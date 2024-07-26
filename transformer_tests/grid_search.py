@@ -118,7 +118,7 @@ def grid_search(model, tokenizer, layer_range, coeff_range):
     best_combination = {"layer": -1, "coefficient": -1, "avg_score": -1}
     
     for layer in tqdm(range(layer_range), desc="Layers"):
-        for coeff in tqdm(range(coeff_range), desc="Coefficients", leave=False):
+        for coeff in tqdm(range(3, coeff_range), desc="Coefficients", leave=False):
             steering_vector = get_steering_vector(model, tokenizer, layer, coeff)
             avg_post, post_responses, post_scores = post_steering(model, tokenizer, layer, steering_vector)
             
@@ -146,13 +146,13 @@ def grid_search(model, tokenizer, layer_range, coeff_range):
         "best_combination": best_combination
     }
     
-    with open("res/scores.json", "w") as f:
+    with open("../res/scores.json", "w") as f:
         json.dump(final_result, f, indent=4)
     
     return result_id
 
 # Usage
-layer_range = 4  # Adjust based on your model's architecture
-coeff_range = 3  # Adjust based on your desired range
+layer_range = 32  # Adjust based on your model's architecture
+coeff_range = 15  # Adjust based on your desired range
 result_id = grid_search(model, tokenizer, layer_range, coeff_range)
 print(f"Grid search completed. Results saved with ID: {result_id}")
