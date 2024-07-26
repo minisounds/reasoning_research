@@ -11,13 +11,9 @@ from transformers import (
     GPT2LMHeadModel,
 )
 import torch
-from transformer_tests.evaluate_response import grade_response
+from evaluate_response import grade_response
 from tqdm import tqdm
-from benchmarks.addition_benchmark import (
-    generate_addition_problem,
-)  # benchmark #1 - add 3 numbers together
 
-# Set up the device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
@@ -29,14 +25,9 @@ tokenizer.pad_token_id = tokenizer.eos_token_id
 config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 config.use_cache = False
 
-# model = AutoModelForCausalLM.from_pretrained("gpt2")
-# tokenizer = AutoTokenizer.from_pretrained("")
-# tokenizer.pad_token = tokenizer.eos_token
-# config = model.config
-# config.use_cache = False
+# Settings
+sampling_kwargs = dict(temperature=1.0, top_p=0.3)
 
-LAYER = 28
-INJ_COEF = 5
 w_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are a helpful AI Assistant who answers questions step by step.<|eot_id|>"
 wo_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are an AI Assistant who answers questions immediately without elaboration.<|eot_id|>"
 
@@ -94,7 +85,18 @@ def add_steering_vectors_hook(steering_vector):
             )
         return output[0] + adjusted_steering_vector, output[1]
     return hook
-    
+
+def generate_response(model, inputs, **kwargs):
+    with torch.no_grad():
+        output = model.generate(
+            input_ids=inputs["input_ids"],
+            attention_mask=inputs["attention_mask"],
+            max_new_tokens=250,
+            **sampling_kwargs,
+            **kwargs
+        )
+    return output
+
 def post_steering(model, tokenizer, layer, steering_vector):
     question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
     full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
@@ -114,7 +116,7 @@ def post_steering(model, tokenizer, layer, steering_vector):
     post_responses = []
     with torch.no_grad():
         for _ in range(5): 
-            output = model.generate(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"], max_new_tokens=250,)
+            output = generate_response(model, inputs)
             post_responses.append(tokenizer.decode(output[0], skip_special_tokens=True))
     
     handle.remove()
@@ -125,27 +127,45 @@ def post_steering(model, tokenizer, layer, steering_vector):
     return avg_post, post_responses, post_scores
 
 def grid_search(model, tokenizer, layer_range, coeff_range):
+    question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
     results = []
-    for layer in tqdm(range(layer_range), desc="Layers"):
-        for coeff in tqdm(range(coeff_range), desc="Coefficients", leave=False):
+    best_combination = {"layer": -1, "coefficient": -1, "avg_score": -1}
+    
+    for layer in tqdm(range(5, layer_range), desc="Layers"):
+        for coeff in tqdm(range(3, coeff_range), desc="Coefficients", leave=False):
             steering_vector = get_steering_vector(model, tokenizer, layer, coeff)
             avg_post, post_responses, post_scores = post_steering(model, tokenizer, layer, steering_vector)
-            results.append({
+            
+            result = {
                 "layer": layer,
                 "coefficient": coeff,
                 "avg_score": avg_post,
-                "responses": post_responses,
-                "scores": post_scores
-            })
+                "scores": post_scores,
+                "best_response": max(post_responses, key=lambda x: grade_response(x, question))
+            }
+            results.append(result)
+            
+            if avg_post > best_combination["avg_score"]:
+                best_combination = {"layer": layer, "coefficient": coeff, "avg_score": avg_post}
     
     result_id = str(uuid.uuid4())
-    with open(f"res/grid_search_results_{result_id}.json", "w") as f:
-        json.dump(results, f, indent=4)
+    final_result = {
+        "metadata": {
+            "result_id": result_id,
+            "layer_range": layer_range,
+            "coeff_range": coeff_range,
+            "model": model.config.name_or_path
+        },
+        "results": results,
+        "best_combination": best_combination
+    }
+    
+    with open("res/scores.json", "w") as f:
+        json.dump(final_result, f, indent=4)
     
     return result_id
 
 # Usage
-layer_range = 5  # Adjust based on your model's architecture
-coeff_range = 3  # Adjust based on your desired range
+layer_range = 32  # Adjust based on your model's architecture
+coeff_range = 15 # Adjust based on your desired range
 result_id = grid_search(model, tokenizer, layer_range, coeff_range)
-print(f"Grid search completed. Results saved with ID: {result_id}")
