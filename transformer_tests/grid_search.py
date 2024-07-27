@@ -25,9 +25,6 @@ tokenizer.pad_token_id = tokenizer.eos_token_id
 config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 config.use_cache = False
 
-# Settings
-sampling_kwargs = dict(temperature=1.0, top_p=0.3)
-
 w_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are a helpful AI Assistant who answers questions step by step.<|eot_id|>"
 wo_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are an AI Assistant who answers questions immediately without elaboration.<|eot_id|>"
 
@@ -131,8 +128,8 @@ def grid_search(model, tokenizer, layer_range, coeff_range):
     results = []
     best_combination = {"layer": -1, "coefficient": -1, "avg_score": -1}
     
-    for layer in tqdm(range(5, layer_range), desc="Layers"):
-        for coeff in tqdm(range(3, coeff_range), desc="Coefficients", leave=False):
+    for layer in tqdm(range(layer_range), desc="Layers"):
+        for coeff in tqdm(range(coeff_range), desc="Coefficients", leave=False):
             steering_vector = get_steering_vector(model, tokenizer, layer, coeff)
             avg_post, post_responses, post_scores = post_steering(model, tokenizer, layer, steering_vector)
             
@@ -166,6 +163,6 @@ def grid_search(model, tokenizer, layer_range, coeff_range):
     return result_id
 
 # Usage
-layer_range = 32  # Adjust based on your model's architecture
-coeff_range = 15 # Adjust based on your desired range
+layer_range = 4  # Adjust based on your model's architecture
+coeff_range = 3  # Adjust based on your desired range
 result_id = grid_search(model, tokenizer, layer_range, coeff_range)
