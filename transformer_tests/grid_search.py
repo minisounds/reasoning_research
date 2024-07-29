@@ -15,6 +15,7 @@ from evaluate_response import grade_response
 from tqdm import tqdm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+sampling_kwargs = dict(temperature=1.0, top_p=0.3)
 
 model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 model = model.to(device)  # Move model to GPU
@@ -164,5 +165,5 @@ def grid_search(model, tokenizer, layer_range, coeff_range):
 
 # Usage
 layer_range = 32  # Adjust based on your model's architecture
-coeff_range = 15  # Adjust based on your desired range
+coeff_range = 15 # Adjust based on your desired range
 result_id = grid_search(model, tokenizer, layer_range, coeff_range)
