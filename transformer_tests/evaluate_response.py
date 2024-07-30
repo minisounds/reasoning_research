@@ -4,6 +4,31 @@ api_key = os.environ.get('OPENAI_API_KEY')
 
 client = OpenAI()
 
+def find_answer(model_response): 
+    prompt = f"""
+    You are a precise answer extractor. Given a response to a math problem, your task is to extract ONLY the final numerical answer. Do not include any units, explanations, or additional text. If there are multiple numbers in the response, identify and return only the final answer. If no clear numerical answer is found, return -1758.
+
+    Response to analyze:
+    {model_response}
+
+    Extract the final numerical answer from the above response. Your output should be ONLY the number, or None if no clear numerical answer is found.
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that extracts numerical answers from text."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+
+    extracted_answer = response.choices[0].message.content
+    
+    return extracted_answer
+
+# print(find_answer("user\nJames decides to run 3 sprints 3 times a week.  He runs 60 meters each sprint.  How many total meters does he run a week?assistant\n\nJames runs 3 sprints a day. Each sprint is 60 meters. So each day he runs 3 x 60 = 180 meters. He does this 7 days a week. So he runs 7 x 180 = 1260 meters. The answer is 1260."))
+
+    
 def grade_response(model_response, original_question):
     prompt = f"""
     You are a 
