@@ -94,4 +94,18 @@ def generate_steered_response(model, tokenizer, question, layer, coeff):
     
     return tokenizer.decode(output[0], skip_special_tokens=True)
 
-    
+def generate_baseline_response(model, tokenizer, question):
+    inputs = tokenizer(
+        question, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()} 
+
+    with torch.no_grad():
+        output = model.generate(
+            input_ids=inputs["input_ids"],
+            attention_mask=inputs["attention_mask"],
+            max_new_tokens=200,
+        )
+
+    answer = tokenizer.decode(output[0], skip_special_tokens=True)
+    return answer

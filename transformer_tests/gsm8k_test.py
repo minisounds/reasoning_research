@@ -7,7 +7,7 @@ from transformers import (
     GPT2LMHeadModel,
 )
 from datasets import load_dataset
-from steering_utils import generate_steered_response, device
+from steering_utils import generate_steered_response, generate_baseline_response, device
 from tqdm import tqdm
 from evaluate_response import find_answer
 import re
@@ -45,7 +45,8 @@ def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=100):
         answers.append(answer)
         
         
-        response = generate_steered_response(model, tokenizer, question, layer, coeff)
+        # response = generate_steered_response(model, tokenizer, question, layer, coeff)
+        response = generate_baseline_response(model, tokenizer, question)
         extracted_answer = find_answer(response)
         # extracted_answer = extract_answer(response)
         model_answers.append(extracted_answer)
