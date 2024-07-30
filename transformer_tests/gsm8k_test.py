@@ -16,7 +16,7 @@ dataset = load_dataset("gsm8k", "main", split="test")
 
 def extract_answer(response):
     # Extract the final answer from the response
-    match = re.search(r'The final answer is (\d+)', response)
+    match = re.search(r'The final answer is (\d+)', response) # this depends on how 
     if match:
         return int(match.group(1))
     else:
