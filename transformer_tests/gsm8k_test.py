@@ -45,8 +45,8 @@ def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=100):
         answers.append(answer)
         
         
-        # response = generate_steered_response(model, tokenizer, question, layer, coeff)
-        response = generate_baseline_response(model, tokenizer, question)
+        response = generate_steered_response(model, tokenizer, question, layer, coeff)
+        # response = generate_baseline_response(model, tokenizer, question)
         extracted_answer = find_answer(response)
         # extracted_answer = extract_answer(response)
         model_answers.append(extracted_answer)
@@ -59,8 +59,8 @@ def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=100):
     return accuracy, correct, total
 
 # Evaluate the model
-layer = 13  # You can adjust this
-coeff = 3.0  # You can adjust this
+layer = 19  # You can adjust this
+coeff = 4  # You can adjust this
 accuracy, correct, total = evaluate_gsm8k(model, tokenizer, dataset, layer, coeff)
 
 print(f"Evaluation Results:")
