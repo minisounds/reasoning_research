@@ -7,7 +7,7 @@ from transformers import (
     GPT2LMHeadModel,
 )
 from datasets import load_dataset
-from steering_utils import generate_steered_response, generate_baseline_response, device
+from steering_utils import generate_steered_response, generate_baseline_response, generate_multi_layer_steered_response, device
 from tqdm import tqdm
 from evaluate_response import find_answer
 import re
@@ -45,8 +45,10 @@ def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=100):
         answers.append(answer)
         
         
-        response = generate_steered_response(model, tokenizer, question, layer, coeff)
+        # response = generate_steered_response(model, tokenizer, question, layer, coeff)
         # response = generate_baseline_response(model, tokenizer, question)
+        response = generate_multi_layer_steered_response(model, tokenizer, question, [12,23], 3)
+        
         extracted_answer = find_answer(response)
         # extracted_answer = extract_answer(response)
         model_answers.append(extracted_answer)
@@ -59,8 +61,8 @@ def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=100):
     return accuracy, correct, total
 
 # Evaluate the model
-layer = 19  # You can adjust this
-coeff = 4  # You can adjust this
+layer = 20  # You can adjust this
+coeff = 5  # You can adjust this
 accuracy, correct, total = evaluate_gsm8k(model, tokenizer, dataset, layer, coeff)
 
 print(f"Evaluation Results:")

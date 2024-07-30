@@ -95,8 +95,9 @@ def generate_steered_response(model, tokenizer, question, layer, coeff):
     return tokenizer.decode(output[0], skip_special_tokens=True)
 
 def generate_baseline_response(model, tokenizer, question):
+    full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
     inputs = tokenizer(
-        question, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True
+        full_prompt, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True
     )
     inputs = {k: v.to(device) for k, v in inputs.items()} 
 
@@ -109,3 +110,50 @@ def generate_baseline_response(model, tokenizer, question):
 
     answer = tokenizer.decode(output[0], skip_special_tokens=True)
     return answer
+
+def generate_multi_layer_steered_response(model, tokenizer, question, layer_range, coeff):
+    # Generate steering vectors for multiple layers
+    steering_vectors = {}
+    for layer in layer_range:
+        steering_vectors[layer] = get_steering_vector(model, tokenizer, layer, coeff)
+    
+    full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+    
+    inputs = tokenizer(
+        full_prompt,
+        return_tensors="pt",
+        return_attention_mask=True
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()}
+    
+    handles = []
+    if isinstance(model, LlamaForCausalLM):
+        for layer, steering_vector in steering_vectors.items():
+            handle = model.model.layers[layer].register_forward_hook(add_steering_vectors_hook(steering_vector))
+            handles.append(handle)
+    else:
+        raise ValueError("Unsupported model type")
+    
+    with torch.no_grad():
+        output = generate_response(model, inputs)
+    
+    # Remove all hooks
+    for handle in handles:
+        handle.remove()
+    
+    return tokenizer.decode(output[0], skip_special_tokens=True)
+
+# Helper function to get layer ranges
+def get_layer_ranges(model, num_sections=3):
+    if isinstance(model, LlamaForCausalLM):
+        total_layers = len(model.model.layers)
+    else:
+        raise ValueError("Unsupported model type")
+    
+    section_size = total_layers // num_sections
+    ranges = []
+    for i in range(num_sections):
+        start = i * section_size
+        end = start + section_size if i < num_sections - 1 else total_layers
+        ranges.append(range(start, end))
+    return ranges
