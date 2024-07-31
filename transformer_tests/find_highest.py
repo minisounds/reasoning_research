@@ -1,7 +1,7 @@
 import json
 
 # Load the JSON data
-with open("../res/scores.json", "r") as f:
+with open("../res/last_token.json", "r") as f:
     data = json.load(f)
 
 # Extract avg_scores with their corresponding layer and coefficient

@@ -28,7 +28,7 @@ def grid_search(model, tokenizer, layer_range, coeff_range):
     results = []
     best_combination = {"layer": -1, "coefficient": -1, "avg_score": -1}
     
-    for layer in tqdm(range(5, layer_range), desc="Layers"):
+    for layer in tqdm(range(8, layer_range), desc="Layers"):
         for coeff in tqdm(range(3, coeff_range), desc="Coefficients", leave=False):
             post_responses = []
             for _ in range(3):
@@ -68,6 +68,6 @@ def grid_search(model, tokenizer, layer_range, coeff_range):
     return result_id
 
 # Usage
-layer_range = 32  # Adjust based on your model's architecture
-coeff_range = 15 # Adjust based on your desired range
+layer_range = 30  # Adjust based on your model's architecture
+coeff_range = 10 # Adjust based on your desired range
 result_id = grid_search(model, tokenizer, layer_range, coeff_range)
