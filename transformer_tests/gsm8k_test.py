@@ -7,7 +7,7 @@ from transformers import (
     GPT2LMHeadModel,
 )
 from datasets import load_dataset
-from steering_utils import generate_steered_response, generate_baseline_response, generate_multi_layer_steered_response, device
+from steering_utils import generate_steered_response, generate_baseline_response, generate_multi_layer_steered_response, generate_last_token_steered_response, device
 from tqdm import tqdm
 from evaluate_response import find_answer
 import re
@@ -21,18 +21,9 @@ tokenizer.pad_token_id = tokenizer.eos_token_id
 config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 config.use_cache = False
 
-# Load GSM8k dataset
 dataset = load_dataset("gsm8k", "main", split="test")
 
-def extract_answer(response):
-    # Extract the final answer from the response
-    match = re.search(r'The answer is (\d+)', response) # this depends on how 
-    if match:
-        return int(match.group(1))
-    else:
-        return None
-
-def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=100):
+def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=4):
     correct = 0
     total = 0
 
@@ -44,13 +35,13 @@ def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=100):
         answer = data_split['answer'][i].split('####')[1].strip()  # Extract the correct answer
         answers.append(answer)
         
-        
         # response = generate_steered_response(model, tokenizer, question, layer, coeff)
         # response = generate_baseline_response(model, tokenizer, question)
-        response = generate_multi_layer_steered_response(model, tokenizer, question, [12,23], 3)
+        # response = generate_multi_layer_steered_response(model, tokenizer, question, [12,23], 3)
+        response = generate_last_token_steered_response(model, tokenizer, question, 18, 3)
+        print(response)
         
         extracted_answer = find_answer(response)
-        # extracted_answer = extract_answer(response)
         model_answers.append(extracted_answer)
         
         if extracted_answer is not None and extracted_answer == answer:
@@ -60,9 +51,8 @@ def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=100):
     accuracy = correct / total
     return accuracy, correct, total
 
-# Evaluate the model
-layer = 20  # You can adjust this
-coeff = 5  # You can adjust this
+layer = 20  
+coeff = 5  
 accuracy, correct, total = evaluate_gsm8k(model, tokenizer, dataset, layer, coeff)
 
 print(f"Evaluation Results:")

@@ -157,3 +157,66 @@ def get_layer_ranges(model, num_sections=3):
         end = start + section_size if i < num_sections - 1 else total_layers
         ranges.append(range(start, end))
     return ranges
+
+
+def get_last_token_steering_vector(model, tokenizer, layer_idx, coeff):
+    activations = []
+
+    def save_activation(model, input, output):
+        # Save only the last token's activation
+        activations.append(output[0][:, -1, :].detach())
+
+    if isinstance(model, LlamaForCausalLM):
+        handle = model.model.layers[layer_idx].register_forward_hook(save_activation)
+    elif isinstance(model, GPT2LMHeadModel):
+        handle = model.transformer.h[layer_idx].register_forward_hook(save_activation)
+    else:
+        raise ValueError("Unsupported model type")
+    
+    w_cot = tokenizer(w_cot_prompt, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+    wo_cot = tokenizer(wo_cot_prompt, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+    
+    w_cot.to(device)
+    wo_cot.to(device)
+
+    with torch.no_grad():
+        _ = model(**w_cot)
+        _ = model(**wo_cot)
+
+    handle.remove()
+
+    steering_vector = activations[1] - activations[0]
+    steering_vector = coeff * steering_vector
+    return steering_vector
+
+def add_last_token_steering_vectors_hook(steering_vector):
+    def hook(module, input, output):
+        # Apply the steering vector only to the last token
+        output[0][:, -1, :] += steering_vector
+        return output
+    return hook
+
+def generate_last_token_steered_response(model, tokenizer, question, layer, coeff):
+    # Generate steered vector
+    steering_vector = get_last_token_steering_vector(model, tokenizer, layer, coeff)
+    
+    full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+    
+    inputs = tokenizer(
+        full_prompt,
+        return_tensors="pt",
+        return_attention_mask=True
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()}
+    
+    if isinstance(model, LlamaForCausalLM):
+        handle = model.model.layers[layer].register_forward_hook(add_last_token_steering_vectors_hook(steering_vector))
+    else:
+        raise ValueError("Unsupported model type")
+    
+    with torch.no_grad():
+        output = generate_response(model, inputs)
+    
+    handle.remove()
+    
+    return tokenizer.decode(output[0], skip_special_tokens=True)
