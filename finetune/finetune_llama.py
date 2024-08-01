@@ -111,7 +111,12 @@ def main(args):
     
     # Initialize tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token_id = tokenizer.eos_token_id
     model = AutoModelForCausalLM.from_pretrained(args.model_name)
+    config = LlamaConfig.from_pretrained(args.model_name)
+    config.use_cache = False
+    
     
     # Create datasets and dataloaders
     train_dataset = GSM8kDataset(train_data, tokenizer)
