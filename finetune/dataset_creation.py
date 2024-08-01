@@ -1,13 +1,21 @@
 import json
 import torch
-from transformers import LlamaTokenizer, LlamaForCausalLM
+from transformers import (
+    AutoTokenizer,
+    AutoModelForCausalLM,
+    LlamaConfig,
+    LlamaForCausalLM,
+)
 from datasets import load_dataset
 from tqdm import tqdm
-
+ 
 training_data = load_dataset("gsm8k", "main", split="train")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def generate_response(model, tokenizer, prompt, use_cot, max_length = 512):
     inputs = tokenizer(prompt, return_tensors="pt", max_length = max_length, truncation=True) 
+    inputs = {k: v.to(model.device) for k, v in inputs.items()}
+    
     with torch.no_grad():
         outputs = model.generate(
             **inputs,
@@ -19,11 +27,16 @@ def generate_response(model, tokenizer, prompt, use_cot, max_length = 512):
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 def create_gsm8k_dataset(output_file, model_name="meta-llama/Meta-Llama-3-8B-Instruct"):
-    tokenizer = LlamaTokenizer.from_pretrained(model_name)
-    model = LlamaForCausalLM.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name)
+    model = model.to(device)  # Move model to GPU
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token_id = tokenizer.eos_token_id
+    config = LlamaConfig.from_pretrained(model_name)
+    config.use_cache = False
     
     processed_data = []
-    for item in training_data:
+    for item in tqdm(training_data, desc="Processing GSM8k: "):
         cot_system_prompt = "You are a helpful AI Assistant who answers questions step by step."
         wo_cot_system_prompt = "You are an AI Assistant who answers questions immediately without elaboration."
         question = item['question']
@@ -43,8 +56,8 @@ def create_gsm8k_dataset(output_file, model_name="meta-llama/Meta-Llama-3-8B-Ins
         with open(output_file, 'w') as f:
             json.dump(processed_data, f, indent=2)
         
-create_gsm8k_dataset('data/processed_gsm8k_dataset.json')
-        
+create_gsm8k_dataset('finetune/data/processed_gsm8k_dataset.json') # CHANGE THIS IF RUNNING WITH DEBUGGER
+print("done with training dataset")
         
 
     
