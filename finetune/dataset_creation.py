@@ -40,7 +40,7 @@ def create_gsm8k_dataset(output_file, model_name="meta-llama/Meta-Llama-3-8B-Ins
     processed_data = []
     iteration = 0 
     
-    for i in tqdm(range(0, 3500, batch_size), desc="Processing GSM8k"):
+    for i in tqdm(range(3500, 5000, batch_size), desc="Processing GSM8k"):
         batch = training_data[i:i+batch_size]
         questions = batch['question']
         
@@ -71,7 +71,7 @@ def create_gsm8k_dataset(output_file, model_name="meta-llama/Meta-Llama-3-8B-Ins
         with open(output_file, 'w') as f: 
             json.dump(processed_data, f, indent=2)
         
-create_gsm8k_dataset('finetune/data/processed_gsm8k_dataset.json') # CHANGE THIS IF RUNNING WITH DEBUGGER
+create_gsm8k_dataset('finetune/data/gsm8k_from_3500.json') # CHANGE THIS IF RUNNING WITH DEBUGGER
 print("done with training dataset")
         
 
