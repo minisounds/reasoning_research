@@ -114,6 +114,8 @@ def main(args):
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.pad_token_id = tokenizer.eos_token_id
     model = AutoModelForCausalLM.from_pretrained(args.model_name)
+    model = torch.nn.DataParallel(model)
+    
     config = LlamaConfig.from_pretrained(args.model_name)
     config.use_cache = False
     
