@@ -9,6 +9,7 @@ from transformers import (
 )
 from torch.cuda.amp import GradScaler, autocast
 from bitsandbytes import optim as bit_optim
+from torch.optim import SGD
 from tqdm import tqdm
 import os
 import json
@@ -16,7 +17,10 @@ import argparse
 from sklearn.model_selection import train_test_split
 
 os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:256'
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:256'
 
+def print_memory_summary(): 
+    num_devices = torch.cuda.device_count()
 def print_memory_summary(): 
     num_devices = torch.cuda.device_count()
     for i in range(num_devices): 
@@ -130,6 +134,9 @@ def main(args):
     # Train the model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
+    # Train the model
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
     # Load the dataset
     with open(args.data_path, 'r') as f:
         data = json.load(f)
@@ -155,6 +162,7 @@ def main(args):
     val_dataset = GSM8kDataset(val_data, tokenizer)
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size)
+    print_memory_summary()
     
     # Initialize optimizer and scheduler
     optimizer = bit_optim.Adam8bit(model.parameters(), lr=args.learning_rate)
@@ -173,7 +181,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fine-tune LLaMA3 8B Instruct on GSM8k dataset")
     parser.add_argument("--data_path", type=str, required=True, help="Path to the processed GSM8k dataset")
     parser.add_argument("--model_name", type=str, default="meta-llama/Meta-Llama-3-8B-Instruct", help="Name or path of the pre-trained model")
-    parser.add_argument("--batch_size", type=int, default=1, help="Batch size for training")
+    parser.add_argument("--batch_size", type=int, default=2, help="Batch size for training")
     parser.add_argument("--learning_rate", type=float, default=5e-5, help="Learning rate")
     parser.add_argument("--num_epochs", type=int, default=3, help="Number of training epochs")
     parser.add_argument("--warmup_steps", type=int, default=100, help="Number of warmup steps for the scheduler")
