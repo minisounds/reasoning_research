@@ -7,15 +7,17 @@ from transformers import (
     AdamW,
     get_linear_schedule_with_warmup
 )
+from torch.optim import SGD
 from tqdm import tqdm
 import os
 import json
 import argparse
 from sklearn.model_selection import train_test_split
 
-os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:50'
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:256'
 
-def print_memory_summary(num_devices): 
+def print_memory_summary(): 
+    num_devices = torch.cuda.device_count()
     for i in range(num_devices): 
         print(torch.cuda.memory_summary(device=torch.device(f"cuda:{i}"), abbreviated=False))
     
@@ -58,14 +60,18 @@ def compute_loss(outputs, labels, is_positive):
     return adjusted_loss.mean()
 
 def train(model, train_loader, val_loader, optimizer, scheduler, device, num_epochs):
-    model.to(device)
     best_val_loss = float('inf')
-    print_memory_summary(2)
+    print_memory_summary()
     for epoch in range(num_epochs):
         model.train()
         total_train_loss = 0
         
         for batch in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs} - Training"):
+            # Ensure all data in the batch is moved to the default CUDA device
+            batch = {k: v.to(device) for k, v in batch.items()}
+            print("Model device:", next(model.parameters()).device)
+            print("Input device:", batch['input_ids'].device)
+
             optimizer.zero_grad()
             
             input_ids = batch['input_ids'].to(device)
@@ -73,9 +79,15 @@ def train(model, train_loader, val_loader, optimizer, scheduler, device, num_epo
             labels = batch['labels'].to(device)
             is_positive = batch['is_positive'].to(device)
             
+            print("Model device:", next(model.parameters()).device)
+            print("Input device:", batch['input_ids'].device)
+            
             outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
             loss = compute_loss(outputs, labels, is_positive)
-            print_memory_summary(2)
+            print_memory_summary()
+            print("Model device:", next(model.parameters()).device)
+            print("Input device:", batch['input_ids'].device)
+
             loss.backward()
             optimizer.step()
             scheduler.step()
@@ -91,6 +103,9 @@ def train(model, train_loader, val_loader, optimizer, scheduler, device, num_epo
         
         with torch.no_grad():
             for batch in tqdm(val_loader, desc=f"Epoch {epoch+1}/{num_epochs} - Validation"):
+                # Ensure all data in the batch is moved to the default CUDA device
+                batch = {k: v.to(device) for k, v in batch.items()} 
+                
                 input_ids = batch['input_ids'].to(device)
                 attention_mask = batch['attention_mask'].to(device)
                 labels = batch['labels'].to(device)
@@ -110,6 +125,9 @@ def train(model, train_loader, val_loader, optimizer, scheduler, device, num_epo
             model.save_pretrained('best_model')
 
 def main(args):
+    # Train the model
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
     # Load the dataset
     with open(args.data_path, 'r') as f:
         data = json.load(f)
@@ -122,30 +140,31 @@ def main(args):
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.pad_token_id = tokenizer.eos_token_id
     model = AutoModelForCausalLM.from_pretrained(args.model_name)
+    model.to(device)
     model = torch.nn.DataParallel(model) # TODO: CHANGE THIS IF USING ONLY 1 GPU
     
     config = LlamaConfig.from_pretrained(args.model_name)
     config.use_cache = False
     
-    
     # Create datasets and dataloaders
     train_dataset = GSM8kDataset(train_data, tokenizer)
     val_dataset = GSM8kDataset(val_data, tokenizer)
-    
+    print_memory_summary()
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size)
+    print_memory_summary()
     
     # Initialize optimizer and scheduler
     optimizer = AdamW(model.parameters(), lr=args.learning_rate)
+    
     scheduler = get_linear_schedule_with_warmup(
         optimizer, 
         num_warmup_steps=args.warmup_steps, 
         num_training_steps=len(train_loader) * args.num_epochs
     )
     
-    # Train the model
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print_memory_summary(2)
+    # check on memory here
+    print_memory_summary()
     
     train(model, train_loader, val_loader, optimizer, scheduler, device, args.num_epochs)
 
@@ -153,7 +172,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fine-tune LLaMA3 8B Instruct on GSM8k dataset")
     parser.add_argument("--data_path", type=str, required=True, help="Path to the processed GSM8k dataset")
     parser.add_argument("--model_name", type=str, default="meta-llama/Meta-Llama-3-8B-Instruct", help="Name or path of the pre-trained model")
-    parser.add_argument("--batch_size", type=int, default=1, help="Batch size for training")
+    parser.add_argument("--batch_size", type=int, default=2, help="Batch size for training")
     parser.add_argument("--learning_rate", type=float, default=5e-5, help="Learning rate")
     parser.add_argument("--num_epochs", type=int, default=3, help="Number of training epochs")
     parser.add_argument("--warmup_steps", type=int, default=100, help="Number of warmup steps for the scheduler")
