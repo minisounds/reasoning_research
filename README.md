@@ -8,9 +8,8 @@ pip install transformers openai datasets scikit-learn
 huggingface-cli login
 
 # Commit & Push to Runpod VM
-git config --global user.email "MY_NAME@example.com"
-
-git config --global user.name "FIRST_NAME LAST_NAME"
+git config --global user.email "jzscuba@gmail.com"
+git config --global user.name "Jason"
 
 # Git LFS
 apt update

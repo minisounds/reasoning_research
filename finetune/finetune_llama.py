@@ -60,7 +60,7 @@ def compute_loss(outputs, labels, is_positive):
 def train(model, train_loader, val_loader, optimizer, scheduler, device, num_epochs):
     model.to(device)
     best_val_loss = float('inf')
-    
+    print_memory_summary(2)
     for epoch in range(num_epochs):
         model.train()
         total_train_loss = 0
@@ -75,7 +75,7 @@ def train(model, train_loader, val_loader, optimizer, scheduler, device, num_epo
             
             outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
             loss = compute_loss(outputs, labels, is_positive)
-            
+            print_memory_summary(2)
             loss.backward()
             optimizer.step()
             scheduler.step()
