@@ -8,9 +8,17 @@ from transformers import (
     get_linear_schedule_with_warmup
 )
 from tqdm import tqdm
+import os
 import json
 import argparse
 from sklearn.model_selection import train_test_split
+
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:50'
+
+def print_memory_summary(num_devices): 
+    for i in range(num_devices): 
+        print(torch.cuda.memory_summary(device=torch.device(f"cuda:{i}"), abbreviated=False))
+    
 
 class GSM8kDataset(Dataset):
     def __init__(self, data, tokenizer, max_length=512):
@@ -114,7 +122,7 @@ def main(args):
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.pad_token_id = tokenizer.eos_token_id
     model = AutoModelForCausalLM.from_pretrained(args.model_name)
-    model = torch.nn.DataParallel(model)
+    model = torch.nn.DataParallel(model) # TODO: CHANGE THIS IF USING ONLY 1 GPU
     
     config = LlamaConfig.from_pretrained(args.model_name)
     config.use_cache = False
@@ -137,13 +145,15 @@ def main(args):
     
     # Train the model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print_memory_summary(2)
+    
     train(model, train_loader, val_loader, optimizer, scheduler, device, args.num_epochs)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fine-tune LLaMA3 8B Instruct on GSM8k dataset")
     parser.add_argument("--data_path", type=str, required=True, help="Path to the processed GSM8k dataset")
     parser.add_argument("--model_name", type=str, default="meta-llama/Meta-Llama-3-8B-Instruct", help="Name or path of the pre-trained model")
-    parser.add_argument("--batch_size", type=int, default=4, help="Batch size for training")
+    parser.add_argument("--batch_size", type=int, default=1, help="Batch size for training")
     parser.add_argument("--learning_rate", type=float, default=5e-5, help="Learning rate")
     parser.add_argument("--num_epochs", type=int, default=3, help="Number of training epochs")
     parser.add_argument("--warmup_steps", type=int, default=100, help="Number of warmup steps for the scheduler")
