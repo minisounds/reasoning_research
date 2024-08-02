@@ -7,15 +7,18 @@ from transformers import (
     AdamW,
     get_linear_schedule_with_warmup
 )
+from torch.cuda.amp import GradScaler, autocast
+from bitsandbytes import optim as bit_optim
 from tqdm import tqdm
 import os
 import json
 import argparse
 from sklearn.model_selection import train_test_split
 
-os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:50'
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:256'
 
-def print_memory_summary(num_devices): 
+def print_memory_summary(): 
+    num_devices = torch.cuda.device_count()
     for i in range(num_devices): 
         print(torch.cuda.memory_summary(device=torch.device(f"cuda:{i}"), abbreviated=False))
     
@@ -58,32 +61,41 @@ def compute_loss(outputs, labels, is_positive):
     return adjusted_loss.mean()
 
 def train(model, train_loader, val_loader, optimizer, scheduler, device, num_epochs):
-    model.to(device)
     best_val_loss = float('inf')
+    scaler = GradScaler() # for mixed precision training
+    accumulation_steps=4 # for gradient accumulation
     
     for epoch in range(num_epochs):
         model.train()
         total_train_loss = 0
         
-        for batch in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs} - Training"):
+        for i, batch in enumerate(tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs} - Training")):
+            # Ensure all data in the batch is moved to the default CUDA device
+            batch = {k: v.to(device) for k, v in batch.items()}
+
             optimizer.zero_grad()
             
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            labels = batch['labels'].to(device)
-            is_positive = batch['is_positive'].to(device)
+            with autocast(): 
+                outputs = model(input_ids = batch['input_ids'], attention_mask=batch['attention_mask'], labels=batch['labels'])
+                loss = compute_loss(outputs, batch['labels'], batch['is_positive'])
+                loss = loss / accumulation_steps
             
-            outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
-            loss = compute_loss(outputs, labels, is_positive)
+            scaler.scale(loss).backward()
+            if (i + 1) % accumulation_steps == 0: # accumulation steps 
+                scaler.step(optimizer)
+                scaler.update()
+                optimizer.zero_grad()
             
-            loss.backward()
-            optimizer.step()
-            scheduler.step()
+            # scaler.step(optimizer)
+            # scaler.update()
             
-            total_train_loss += loss.item()
+            total_train_loss += loss.item() * accumulation_steps
         
         avg_train_loss = total_train_loss / len(train_loader)
         print(f"Epoch {epoch+1}/{num_epochs}, Training Loss: {avg_train_loss:.4f}")
+        
+        # clear cache between training & validation: 
+        torch.cuda.empty_cache()
         
         # Validation
         model.eval()
@@ -91,25 +103,33 @@ def train(model, train_loader, val_loader, optimizer, scheduler, device, num_epo
         
         with torch.no_grad():
             for batch in tqdm(val_loader, desc=f"Epoch {epoch+1}/{num_epochs} - Validation"):
-                input_ids = batch['input_ids'].to(device)
-                attention_mask = batch['attention_mask'].to(device)
-                labels = batch['labels'].to(device)
-                is_positive = batch['is_positive'].to(device)
-                
-                outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
-                loss = compute_loss(outputs, labels, is_positive)
+                # Ensure all data in the batch is moved to the default CUDA device
+                batch = {k: v.to(device) for k, v in batch.items()}
+                with autocast():
+                    outputs = model(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'], labels=batch['labels'], use_cache=False)
+                    loss = compute_loss(outputs, batch['labels'], batch['is_positive'])
                 
                 total_val_loss += loss.item()
         
         avg_val_loss = total_val_loss / len(val_loader)
         print(f"Epoch {epoch+1}/{num_epochs}, Validation Loss: {avg_val_loss:.4f}")
         
+        # clear cache between training & validation: 
+        torch.cuda.empty_cache()
+        
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
             print(f"New best validation loss: {best_val_loss:.4f}. Saving model...")
             model.save_pretrained('best_model')
+        
+        # clear cache between training & validation: 
+        torch.cuda.empty_cache()
+        
 
 def main(args):
+    # Train the model
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
     # Load the dataset
     with open(args.data_path, 'r') as f:
         data = json.load(f)
@@ -122,30 +142,30 @@ def main(args):
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.pad_token_id = tokenizer.eos_token_id
     model = AutoModelForCausalLM.from_pretrained(args.model_name)
-    model = torch.nn.DataParallel(model) # TODO: CHANGE THIS IF USING ONLY 1 GPU
-    
+    model.to(device)
+    # model = torch.nn.DataParallel(model) # TODO: CHANGE THIS IF USING ONLY 1 GPU
+    torch.cuda.empty_cache()
     config = LlamaConfig.from_pretrained(args.model_name)
     config.use_cache = False
+    # model.config.use_cache = False
     
     
     # Create datasets and dataloaders
     train_dataset = GSM8kDataset(train_data, tokenizer)
     val_dataset = GSM8kDataset(val_data, tokenizer)
-    
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size)
     
     # Initialize optimizer and scheduler
-    optimizer = AdamW(model.parameters(), lr=args.learning_rate)
+    optimizer = bit_optim.Adam8bit(model.parameters(), lr=args.learning_rate)
+    # optimizer = AdamW(model.parameters(), lr=args.learning_rate)
+    
     scheduler = get_linear_schedule_with_warmup(
         optimizer, 
         num_warmup_steps=args.warmup_steps, 
         num_training_steps=len(train_loader) * args.num_epochs
     )
     
-    # Train the model
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print_memory_summary(2)
     
     train(model, train_loader, val_loader, optimizer, scheduler, device, args.num_epochs)
 
