@@ -43,6 +43,30 @@ def get_contrasted_activations(model, tokenizer, layer, coeff, question):
     
     return contrasted_activations
 
+def average_pooling(hidden_states):
+    pooled_states = torch.mean(hidden_states, dim=1)
+    return pooled_states
+
+def get_hidden_state(model, tokenizer, layer, question): 
+    w_cot = w_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
+    # wo_cot = wo_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
+    
+    cot_input_ids = tokenizer(w_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+    # wo_cot_input_ids = tokenizer(wo_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+    
+    cot_input_ids.to(device)
+    # wo_cot_input_ids.to(device)
+    
+    with torch.no_grad():
+        output = model(**cot_input_ids, output_hidden_states=True)
+        hidden_state = output.hidden_states
+        # hidden_state = output.hidden_states
+        # _ = model(**wo_cot_input_ids)
+    
+    format_state = average_pooling(hidden_state[layer])
+    
+    return format_state
+
 def get_activations(model, tokenizer, layer, coeff, question):
     activations = []
     def extract_activation(model, input, output):
