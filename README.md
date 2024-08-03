@@ -2,7 +2,7 @@
 Generalized Reasoning Research - Training Sparse Autoencoders in Pursuit of Generalized Reasoning Control Vector - Stanford SERI Summer Cohort 2024 - Advised by Scott Viteri
 
 # Install Dependencies
-pip install transformers openai datasets scikit-learn
+pip install transformers openai datasets scikit-learn bitsandbytes
 
 # Authenticate with HuggingFace
 huggingface-cli login

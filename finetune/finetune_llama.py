@@ -85,7 +85,7 @@ def train(model, train_loader, val_loader, optimizer, scheduler, device, num_epo
                 scaler.step(optimizer)
                 scaler.update()
                 optimizer.zero_grad()
-            
+
             # scaler.step(optimizer)
             # scaler.update()
             
@@ -102,7 +102,7 @@ def train(model, train_loader, val_loader, optimizer, scheduler, device, num_epo
         total_val_loss = 0
         
         with torch.no_grad():
-            for batch in tqdm(val_loader, desc=f"Epoch {epoch+1}/{num_epochs} - Validation"):
+            for i, batch in enumerate(tqdm(val_loader, desc=f"Epoch {epoch+1}/{num_epochs} - Validation")):
                 # Ensure all data in the batch is moved to the default CUDA device
                 batch = {k: v.to(device) for k, v in batch.items()}
                 with autocast():
@@ -114,13 +114,10 @@ def train(model, train_loader, val_loader, optimizer, scheduler, device, num_epo
         avg_val_loss = total_val_loss / len(val_loader)
         print(f"Epoch {epoch+1}/{num_epochs}, Validation Loss: {avg_val_loss:.4f}")
         
-        # clear cache between training & validation: 
-        torch.cuda.empty_cache()
-        
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
             print(f"New best validation loss: {best_val_loss:.4f}. Saving model...")
-            model.save_pretrained('best_model')
+            # model.save_pretrained('best_model')
         
         # clear cache between training & validation: 
         torch.cuda.empty_cache()
@@ -165,6 +162,7 @@ def main(args):
     
     
     train(model, train_loader, val_loader, optimizer, scheduler, device, args.num_epochs)
+    print("done with training")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fine-tune LLaMA3 8B Instruct on GSM8k dataset")
