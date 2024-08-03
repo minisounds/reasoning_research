@@ -7,6 +7,82 @@ sampling_kwargs = dict(temperature=1.0, top_p=0.3)
 w_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are a helpful AI Assistant who answers questions step by step.<|eot_id|>"
 wo_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are an AI Assistant who answers questions immediately without elaboration.<|eot_id|>"
 
+def get_contrasted_activations(model, tokenizer, layer, coeff, question):
+    activations = []
+    def extract_activation(model, input, output):
+        activations.append(
+            output[0].detach()
+        )
+    
+    hook = model.model.layers[layer].register_forward_hook(extract_activation)
+    
+    w_cot = w_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
+    wo_cot = wo_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
+    
+    cot_input_ids = tokenizer(w_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+    wo_cot_input_ids = tokenizer(wo_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+    
+    cot_input_ids.to(device)
+    wo_cot_input_ids.to(device)
+    
+    with torch.no_grad():
+        _ = model(**cot_input_ids)
+        _ = model(**wo_cot_input_ids)
+    
+    hook.remove()
+    
+    max_seq_length = max(activations[0].shape[1], activations[1].shape[1])
+    
+    padded_activations = [
+        torch.nn.functional.pad(act, (0, 0, 0, max_seq_length - act.shape[1]))
+        for act in activations
+    ]
+    
+    contrasted_activations = padded_activations[0] - padded_activations[1] # since 0 is likely longer
+    contrasted_activations = coeff * contrasted_activations
+    
+    return contrasted_activations
+
+def get_activations(model, tokenizer, layer, coeff, question):
+    activations = []
+    def extract_activation(model, input, output):
+        activations.append(
+            output[0].detach()
+        )
+    
+    hook = model.model.layers[layer].register_forward_hook(extract_activation)
+    
+    w_cot = w_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
+    
+    cot_input_ids = tokenizer(w_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+    cot_input_ids.to(device)
+    
+    with torch.no_grad():
+        _ = model(**cot_input_ids)
+    
+    hook.remove()
+    
+    return coeff * activations[0]
+        
+def generate_steered_response_w_vector(model, tokenizer, question, steering_vector):
+    full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+    
+    inputs = tokenizer(
+        full_prompt,
+        return_tensors="pt",
+        return_attention_mask=True
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()}
+    
+    handle = model.model.layers[layer].register_forward_hook(add_steering_vectors_hook(steering_vector))
+    
+    with torch.no_grad():
+        output = generate_response(model, inputs)
+    
+    handle.remove()
+    
+    return tokenizer.decode(output[0], skip_special_tokens=True)
+
 def get_steering_vector(model, tokenizer, layer_idx, coeff):
     activations = []
 
