@@ -26,7 +26,7 @@ layer = 19
 coeff = 4 # think: how to get best? 
 max_seq_length = 512
 
-# TODO: load dataset from FSM8k
+# TODO: load dataset from GSM8k
 dataset = dataset[:20]
 hidden_states = []
 for question in tqdm(dataset["question"], desc="Processing Questions: "):
