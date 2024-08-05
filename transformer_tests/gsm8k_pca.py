@@ -27,17 +27,21 @@ coeff = 4 # think: how to get best?
 max_seq_length = 512
 
 # TODO: load dataset from GSM8k
-dataset = dataset[:100]
+dataset = dataset[:600]
 activations = []
 for question in tqdm(dataset["question"], desc="Processing Questions: "):
-    pooled_activation = get_contrasted_pooled_activations(model, tokenizer, layer, coeff, question)
-    activations.append(pooled_activation.cpu().numpy())
+    pooled_activation1 = get_contrasted_pooled_activations(model, tokenizer, layer, coeff, question)
+    pooled_activation2 = get_contrasted_pooled_activations(model, tokenizer, layer-1, coeff, question)
+
+    concatenated_activation = torch.cat([pooled_activation1, pooled_activation2], dim=-1)
+    activations.append(concatenated_activation.cpu().numpy())
+
 
 # stack hidden states
 stacked_states = np.vstack(activations)
 
 # Run PCA
-pca = PCA(n_components=5)
+pca = PCA(n_components=10)
 pca_result = pca.fit_transform(stacked_states)
 
 # Analyze results
@@ -52,8 +56,10 @@ steering_vector = pca.components_[0]
 question = dataset['question'][8]
 answer = dataset['answer'][8]
 
-# TODO: create a steering function that generates steered response with hidden state 
+# TODO: split tensor 8192 into x many vectors (function)
+# TODO: create function to inject a series of steering vectors in
 pos = 1 # token where we inject
+
 ex_response = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, pos)
 baseline = generate_baseline_response(model, tokenizer, question)
 print(f"steered response: \n {ex_response} \n")
