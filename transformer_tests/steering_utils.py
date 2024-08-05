@@ -7,7 +7,10 @@ sampling_kwargs = dict(temperature=1.0, top_p=0.3)
 w_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are a helpful AI Assistant who answers questions step by step.<|eot_id|>"
 wo_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are an AI Assistant who answers questions immediately without elaboration.<|eot_id|>"
 
-def get_contrasted_pooled_activations(model, tokenizer, layer, question):
+def get_contrasted_pooled_activations(model, tokenizer, layer, question, seed=None):
+    if seed is not None: 
+        torch.manual_seed(seed)
+        
     activations = []
     def extract_activation(model, input, output):
         activations.append(
@@ -113,7 +116,9 @@ def add_steering_vectors_hook(steering_vector, coeff, pos):
         return output[0], output[1]
     return hook
     
-def generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos):
+def generate_steered_response_w_vector(model, tokenizer, layer_range, question, steering_vectors, coeff, pos, seed=None):
+    if seed is not None: 
+        torch.manual_seed(seed)
     full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
     
     inputs = tokenizer(
@@ -123,7 +128,9 @@ def generate_steered_response_w_vector(model, tokenizer, layer, question, steeri
     )
     inputs = {k: v.to(device) for k, v in inputs.items()}
     
-    handle = model.model.layers[layer].register_forward_hook(add_steering_vectors_hook(steering_vector, coeff, pos))
+    for i, layer in enumerate(range(layer_range[0], layer_range[1], 1)): 
+        steering_vector = steering_vectors[i]
+        handle = model.model.layers[layer].register_forward_hook(add_steering_vectors_hook(steering_vector, coeff, pos))
     
     with torch.no_grad():
         output = generate_response(model, inputs)
@@ -170,7 +177,10 @@ def generate_steered_response(model, tokenizer, question, layer, coeff):
     
     return tokenizer.decode(output[0], skip_special_tokens=True)
 
-def generate_baseline_response(model, tokenizer, question):
+def generate_baseline_response(model, tokenizer, question, seed=None):
+    if seed is not None: 
+        torch.manual_seed(seed)
+        
     full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
     inputs = tokenizer(
         full_prompt, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True
