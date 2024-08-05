@@ -23,18 +23,20 @@ config.use_cache = False
 dataset = load_dataset("gsm8k", "main", split="test")
 
 layer = 19
-coeff = 4 # think: how to get best? 
+coeff = 20 # think: how to get best? 
 max_seq_length = 512
 
 # TODO: load dataset from GSM8k
-dataset = dataset[:600]
+dataset = dataset[:100]
+layer_range = [15, 25]
 activations = []
 for question in tqdm(dataset["question"], desc="Processing Questions: "):
-    pooled_activation1 = get_contrasted_pooled_activations(model, tokenizer, layer, coeff, question)
-    pooled_activation2 = get_contrasted_pooled_activations(model, tokenizer, layer-1, coeff, question)
-
-    concatenated_activation = torch.cat([pooled_activation1, pooled_activation2], dim=-1)
-    activations.append(concatenated_activation.cpu().numpy())
+    # for layer in range(layer_range[0], layer_range[1], 1):
+    pooled_activation = get_contrasted_pooled_activations(model, tokenizer, layer, question)
+    # concatenated_activation = torch.cat([pooled_activation1, pooled_activation1], dim=-1)
+    # pooled_activation.cpu().numpy()
+    activations.append(pooled_activation.cpu().numpy())
+    # activations.append(concatenated_activation.cpu().numpy())
 
 
 # stack hidden states
@@ -58,9 +60,9 @@ answer = dataset['answer'][8]
 
 # TODO: split tensor 8192 into x many vectors (function)
 # TODO: create function to inject a series of steering vectors in
-pos = 1 # token where we inject
+pos = -4 # token where we inject
 
-ex_response = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, pos)
+ex_response = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos)
 baseline = generate_baseline_response(model, tokenizer, question)
 print(f"steered response: \n {ex_response} \n")
 print(f"baseline response: \n {baseline}")
