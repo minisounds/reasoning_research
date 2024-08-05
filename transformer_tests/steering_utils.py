@@ -105,7 +105,7 @@ def get_activations(model, tokenizer, layer, coeff, question):
     
     return coeff * activations[0]
         
-def generate_steered_response_w_vector(model, tokenizer, question, steering_vector):
+def generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, pos):
     full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
     
     inputs = tokenizer(
@@ -115,7 +115,7 @@ def generate_steered_response_w_vector(model, tokenizer, question, steering_vect
     )
     inputs = {k: v.to(device) for k, v in inputs.items()}
     
-    handle = model.model.layers[layer].register_forward_hook(add_steering_vectors_hook(steering_vector))
+    handle = model.model.layers[layer].register_forward_hook(add_steering_vectors_hook(steering_vector, pos))
     
     with torch.no_grad():
         output = generate_response(model, inputs)
@@ -162,17 +162,11 @@ def get_steering_vector(model, tokenizer, layer_idx, coeff):
     steering_vector = coeff * steering_vector
     return steering_vector
 
-def add_steering_vectors_hook(steering_vector):
+def add_steering_vectors_hook(steering_vector, pos):
+    steering_vector = torch.tensor(steering_vector).to(device)
     def hook(module, input, output):
-        current_seq_length = output[0].shape[1]
-        if steering_vector.shape[1] > current_seq_length:
-            adjusted_steering_vector = steering_vector[:, :current_seq_length, :]
-        else:
-            adjusted_steering_vector = torch.nn.functional.pad(
-                steering_vector,
-                (0, 0, 0, current_seq_length - steering_vector.shape[1], 0, 0),
-            )
-        return output[0] + adjusted_steering_vector, output[1]
+        output[0][:, :pos, :] += steering_vector
+        return output[0], output[1]
     return hook
 
 def generate_response(model, inputs, **kwargs):
