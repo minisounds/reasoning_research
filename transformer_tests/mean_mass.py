@@ -9,7 +9,9 @@ from transformers import (
 from datasets import load_dataset
 import numpy as np
 from steering_utils import get_contrasted_pooled_activations, get_pooled_activations, generate_steered_response_w_vector, generate_baseline_response, device
+from evaluate_response import find_answer
 from tqdm import tqdm
+import re
 
 # Set seeds for reproducibility
 def set_seed(seed):
@@ -35,7 +37,7 @@ max_seq_length = 512
 
 training_data = dataset[:50] #TODO: PLAY WITH THIS 
 layer = 19
-layer_range = [17, 21] #TODO: PLAY WITH THIS
+# layer_range = [17, 21] #TODO: PLAY WITH THIS
 activations = []
 
 # Initialize an empty PyTorch tensor
@@ -61,12 +63,50 @@ steering_vector = mean_w_cot - mean_wo_cot
 
 # PARAMETERS
 # question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
-question = dataset['question'][158]
+# question = dataset['question'][158]
 pos = [0, -1] # TODO: Implement multiple position injections
-coeff = 50 # TODO: Implement decaying coefficient method
+# coeff = 25 # TODO: Implement decaying coefficient method
 
 # TODO: Implement steered response without layer range
-ex_response = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=42)
-baseline = generate_baseline_response(model, tokenizer, question, seed=42)
-print(f"steered response: \n {ex_response} \n")
-print(f"baseline response: \n {baseline}")
+# ex_response = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=42)
+# baseline = generate_baseline_response(model, tokenizer, question, seed=42)
+# print(f"steered response: \n {ex_response} \n")
+# print(f"baseline response: \n {baseline}")
+
+def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=300):
+    correct = 0 
+    total = 0
+    model_answers = []
+    answers = []
+    data_split = dataset[50:num_samples]
+    
+    for i in tqdm(range(len(data_split['question'])), desc="Evaluating"): 
+        question = data_split['question'][i]
+        answer = data_split['answer'][i].split('####')[1].strip()  # Extract the correct answer
+        answers.append(answer)
+        
+        response = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=42)
+        
+        extracted_answer = find_answer(response)
+        model_answers.append(extracted_answer)
+        
+        if extracted_answer is not None and extracted_answer == answer: 
+            correct += 1
+        total += 1
+    
+    accuracy = correct / total
+    return accuracy, correct, total 
+
+layer = 19 
+coeff = 25
+accuracy, correct, total = evaluate_gsm8k(model, tokenizer, dataset, layer, coeff)
+
+print(f"Evaluation Results:")
+print(f"Layer: {layer}")
+print(f"Coefficient: {coeff}")
+print(f"Correct: {correct}")
+print(f"Total: {total}")
+print(f"Accuracy: {accuracy:.2%}")
+
+        
+    
