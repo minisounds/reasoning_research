@@ -85,7 +85,8 @@ def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=300):
         answer = data_split['answer'][i].split('####')[1].strip()  # Extract the correct answer
         answers.append(answer)
         
-        response = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=42)
+        # response = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=42)
+        response = generate_baseline_response(model, tokenizer, question, seed=42)
         
         extracted_answer = find_answer(response)
         model_answers.append(extracted_answer)
