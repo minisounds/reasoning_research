@@ -40,7 +40,10 @@ def get_contrasted_pooled_activations(model, tokenizer, layer, question, seed=No
     
     return pool_cot-pool_wo_cot
 
-def get_pooled_activations(model, tokenizer, layer, question):
+def get_pooled_activations(model, tokenizer, layer, question, use_cot=True, seed=None):
+    if seed is not None: 
+        torch.manual_seed(seed)
+
     activations = []
     def extract_activation(model, input, output):
         activations.append(
@@ -49,9 +52,13 @@ def get_pooled_activations(model, tokenizer, layer, question):
     
     hook = model.model.layers[layer].register_forward_hook(extract_activation)
     
-    w_cot = w_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
-    cot_input_ids = tokenizer(w_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
-    cot_input_ids.to(device)
+    if use_cot:
+        w_cot = w_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
+        cot_input_ids = tokenizer(w_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+        cot_input_ids.to(device)
+    else: 
+        wo_cot = wo_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
+        cot_input_ids = tokenizer(wo_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
     
     with torch.no_grad():
         _ = model(**cot_input_ids)
