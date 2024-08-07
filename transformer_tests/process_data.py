@@ -29,8 +29,22 @@ def get_pooled_activations(model, tokenizer, data, layer):
         wo_cot_activations.append(wo_cot_pooled)
     
     return w_cot_activations, wo_cot_activations
+
+def get_mean_mass_steering_vector(w_cot_activations, wo_cot_activations): 
+    w_cot_activations = [w_cot_vector.cpu().numpy() for w_cot_vector in w_cot_activations]
+    wo_cot_activations = [wo_cot_vector.cpu().numpy() for wo_cot_vector in wo_cot_activations]
+    
+    mean_w_cot = np.mean(w_cot_activations, axis=0)
+    mean_wo_cot = np.mean(wo_cot_activations, axis=0)
+    
+    steering_vector = mean_w_cot - mean_wo_cot
+    return steering_vector
     
 
-# IMPORT DATASETS AND WORK WITH EACH 
+# IMPORT DATASET
+mmlu_data = load_dataset("mmlu", split="train")
+
+# SAVE STEERING VECTOR 
+
 
 
