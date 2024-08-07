@@ -59,6 +59,7 @@ def get_pooled_activations(model, tokenizer, layer, question, use_cot=True, seed
     else: 
         wo_cot = wo_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
         cot_input_ids = tokenizer(wo_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+        cot_input_ids.to(device)
     
     with torch.no_grad():
         _ = model(**cot_input_ids)
@@ -119,11 +120,12 @@ def add_steering_vectors_hook(steering_vector, coeff, pos):
     steering_vector = torch.tensor(steering_vector).to(device)
     def hook(model, input, output):
         if output[0].shape[1] > 2:
-            output[0][:, pos, :] += coeff*steering_vector # add to the last seq
+            for p in pos: 
+                output[0][:, p, :] += coeff*steering_vector # add to the last seq
         return output[0], output[1]
     return hook
     
-def generate_steered_response_w_vector(model, tokenizer, layer_range, question, steering_vectors, coeff, pos, seed=None):
+def generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=None):
     if seed is not None: 
         torch.manual_seed(seed)
     full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
@@ -135,9 +137,8 @@ def generate_steered_response_w_vector(model, tokenizer, layer_range, question, 
     )
     inputs = {k: v.to(device) for k, v in inputs.items()}
     
-    for i, layer in enumerate(range(layer_range[0], layer_range[1], 1)): 
-        steering_vector = steering_vectors[i]
-        handle = model.model.layers[layer].register_forward_hook(add_steering_vectors_hook(steering_vector, coeff, pos))
+    # for i, layer in enumerate(range(layer_range[0], layer_range[1], 1)): 
+    handle = model.model.layers[layer].register_forward_hook(add_steering_vectors_hook(steering_vector, coeff, pos))
     
     with torch.no_grad():
         output = generate_response(model, inputs)
