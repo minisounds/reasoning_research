@@ -17,19 +17,6 @@ config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 config.use_cache = False
 
 # HELPER FUNC:
-# get lists of pooled activations from questions in dataset
-def get_pooled_activations(model, tokenizer, data, layer): 
-    w_cot_activations = []
-    wo_cot_activations = []
-    
-    for question in data['question']: 
-        w_cot_pooled = get_pooled_activations(model, tokenizer, layer, question, use_cot=True, seed=42)
-        w_cot_activations.append(w_cot_pooled)
-        wo_cot_pooled = get_pooled_activations(model, tokenizer, layer, question, use_cot=False, seed=42)
-        wo_cot_activations.append(wo_cot_pooled)
-    
-    return w_cot_activations, wo_cot_activations
-
 def get_mean_mass_steering_vector(w_cot_activations, wo_cot_activations): 
     w_cot_activations = [w_cot_vector.cpu().numpy() for w_cot_vector in w_cot_activations]
     wo_cot_activations = [wo_cot_vector.cpu().numpy() for wo_cot_vector in wo_cot_activations]
@@ -40,11 +27,32 @@ def get_mean_mass_steering_vector(w_cot_activations, wo_cot_activations):
     steering_vector = mean_w_cot - mean_wo_cot
     return steering_vector
     
+# ACTIVATIONS & HYPERPARAMETERS
+w_cot_activations = []
+wo_cot_activations = [] 
+layer = 19
 
-# IMPORT DATASET
-mmlu_data = load_dataset("mmlu", split="train")
+# DATASETS
 
+# MMLU - Pull 2 Questions from Each Subsection (from dev) - total of 125 questions
+mmlu_data = load_dataset("cais/mmlu", "all")
+count = 0
+for i in tqdm(range(len(mmlu_data['dev']))):
+    # iterate twice, then add 3 to index
+    if count < 2: 
+        w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, mmlu_data['dev']['question'][i], seed=42)
+        w_cot_activations.append(w_cot_vector)
+        wo_cot_activations.append(wo_cot_vector)
+        count += 1
+    else: 
+        count = 0
+        i += 3
+
+print("mmlu activations completed")
+
+# CREATE STEERING VECTOR 
+steering_vector = get_mean_mass_steering_vector(w_cot_activations, wo_cot_activations)
 # SAVE STEERING VECTOR 
-
+np.save('steering_vector_layer_19.npy', steering_vector) 
 
 

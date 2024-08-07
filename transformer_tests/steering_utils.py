@@ -48,7 +48,7 @@ def get_contrasted_pooled_activations(model, tokenizer, layer, question, seed=No
     
     return pool_cot-pool_wo_cot
 
-def get_pooled_activations(model, tokenizer, layer, question, use_cot=True, seed=None):
+def get_pooled_activations(model, tokenizer, layer, question, seed=None):
     if seed is not None: 
         torch.manual_seed(seed)
 
@@ -60,24 +60,25 @@ def get_pooled_activations(model, tokenizer, layer, question, use_cot=True, seed
     
     hook = model.model.layers[layer].register_forward_hook(extract_activation)
     
-    if use_cot:
-        w_cot = w_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
-        cot_input_ids = tokenizer(w_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
-        cot_input_ids.to(device)
-    else: 
-        wo_cot = wo_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
-        cot_input_ids = tokenizer(wo_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
-        cot_input_ids.to(device)
+    w_cot = w_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
+    w_cot_input_ids = tokenizer(w_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+    w_cot_input_ids.to(device)
+
+    wo_cot = wo_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
+    wo_cot_input_ids = tokenizer(wo_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+    wo_cot_input_ids.to(device)
     
     with torch.no_grad():
-        _ = model(**cot_input_ids)
+        _ = model(**w_cot_input_ids)
+        _ = model(**wo_cot_input_ids)
     
     hook.remove()
     
     # pool activations for equal activations
-    pool_cot = average_pooling(activations[0])
+    pool_w_cot = average_pooling(activations[0])
+    pool_wo_cot = average_pooling(activations[1])
     
-    return pool_cot
+    return pool_w_cot, pool_wo_cot
 
 def average_pooling(activations):
     pooled_states = torch.mean(activations, dim=1)
