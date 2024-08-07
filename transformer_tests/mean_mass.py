@@ -37,11 +37,7 @@ max_seq_length = 512
 
 training_data = dataset[:50] #TODO: PLAY WITH THIS 
 layer = 19
-# layer_range = [17, 21] #TODO: PLAY WITH THIS
 activations = []
-
-# Initialize an empty PyTorch tensor
-concatenated_activation = torch.empty(0).to(device)
 
 w_cot_activations = []
 wo_cot_activations = []

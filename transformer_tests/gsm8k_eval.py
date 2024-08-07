@@ -7,7 +7,6 @@ from transformers import (
     GPT2LMHeadModel,
 )
 from datasets import load_dataset
-from mean_mass import 
 from steering_utils import generate_steered_response, generate_baseline_response, generate_multi_layer_steered_response, generate_last_token_steered_response, device
 from tqdm import tqdm
 from evaluate_response import find_answer
