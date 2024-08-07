@@ -8,18 +8,10 @@ from transformers import (
 )
 from datasets import load_dataset
 import numpy as np
-from steering_utils import get_contrasted_pooled_activations, get_pooled_activations, generate_steered_response_w_vector, generate_baseline_response, device
+from steering_utils import get_contrasted_pooled_activations, get_pooled_activations, generate_steered_response_w_vector, generate_baseline_response, device, set_seed
 from evaluate_response import find_answer
 from tqdm import tqdm
 import re
-
-# Set seeds for reproducibility
-def set_seed(seed):
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    np.random.seed(seed)
     
 set_seed(42)
 
@@ -31,7 +23,7 @@ tokenizer.pad_token_id = tokenizer.eos_token_id
 config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 config.use_cache = False
     
-dataset = load_dataset("gsm8k", "main", split="test")
+dataset = load_dataset("gsm8k", "main", split="train")
 
 max_seq_length = 512
 
@@ -43,7 +35,6 @@ w_cot_activations = []
 wo_cot_activations = []
 
 for question in tqdm(training_data["question"], desc="Processing Questions: "):
-    concatenated_activation = torch.empty(0).to(device)
     w_cot_pooled = get_pooled_activations(model, tokenizer, layer, question, use_cot=True, seed=42)
     w_cot_activations.append(w_cot_pooled)
     wo_cot_pooled = get_pooled_activations(model, tokenizer, layer, question, use_cot=False, seed=42)
@@ -69,7 +60,8 @@ pos = [0, -1] # TODO: Implement multiple position injections
 # print(f"steered response: \n {ex_response} \n")
 # print(f"baseline response: \n {baseline}")
 
-def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=300):
+# have a test that runs mean mass vs. baseline (which we calculated to be 0.8)
+def evaluate_mean_mass(model, tokenizer, dataset, layer, coeff, num_samples=300):
     correct = 0 
     total = 0
     model_answers = []
@@ -96,7 +88,7 @@ def evaluate_gsm8k(model, tokenizer, dataset, layer, coeff, num_samples=300):
 
 layer = 19 
 coeff = 25
-accuracy, correct, total = evaluate_gsm8k(model, tokenizer, dataset, layer, coeff)
+accuracy, correct, total = evaluate_mean_mass(model, tokenizer, dataset, layer, coeff)
 
 print(f"Evaluation Results:")
 print(f"Layer: {layer}")

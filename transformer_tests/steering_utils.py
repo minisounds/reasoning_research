@@ -1,5 +1,6 @@
 import torch
 from transformers import LlamaForCausalLM, GPT2LMHeadModel
+import numpy as np
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 sampling_kwargs = dict(temperature=1.0, top_p=0.3)
@@ -7,6 +8,13 @@ sampling_kwargs = dict(temperature=1.0, top_p=0.3)
 w_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are a helpful AI Assistant who answers questions step by step.<|eot_id|>"
 wo_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are an AI Assistant who answers questions immediately without elaboration.<|eot_id|>"
 
+# Set seeds for reproducibility
+def set_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    np.random.seed(seed)
 def get_contrasted_pooled_activations(model, tokenizer, layer, question, seed=None):
     if seed is not None: 
         torch.manual_seed(seed)
