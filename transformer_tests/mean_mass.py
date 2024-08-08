@@ -31,22 +31,22 @@ training_data = dataset[:50] #TODO: PLAY WITH THIS
 layer = 19
 activations = []
 
-w_cot_activations = []
-wo_cot_activations = []
+# w_cot_activations = []
+# wo_cot_activations = []
 
-for question in tqdm(training_data["question"], desc="Processing Questions: "):
-    w_cot_pooled = get_pooled_activations(model, tokenizer, layer, question, use_cot=True, seed=42)
-    w_cot_activations.append(w_cot_pooled)
-    wo_cot_pooled = get_pooled_activations(model, tokenizer, layer, question, use_cot=False, seed=42)
-    wo_cot_activations.append(wo_cot_pooled)
+# for question in tqdm(training_data["question"], desc="Processing Questions: "):
+#     w_cot_pooled = get_pooled_activations(model, tokenizer, layer, question, use_cot=True, seed=42)
+#     w_cot_activations.append(w_cot_pooled)
+#     wo_cot_pooled = get_pooled_activations(model, tokenizer, layer, question, use_cot=False, seed=42)
+#     wo_cot_activations.append(wo_cot_pooled)
 
-w_cot_activations = [w_cot_vector.cpu().numpy() for w_cot_vector in w_cot_activations]
-wo_cot_activations = [wo_cot_vector.cpu().numpy() for wo_cot_vector in wo_cot_activations]
+# w_cot_activations = [w_cot_vector.cpu().numpy() for w_cot_vector in w_cot_activations]
+# wo_cot_activations = [wo_cot_vector.cpu().numpy() for wo_cot_vector in wo_cot_activations]
 
-mean_w_cot = np.mean(w_cot_activations, axis = 0)
-mean_wo_cot = np.mean(wo_cot_activations, axis = 0)
+# mean_w_cot = np.mean(w_cot_activations, axis = 0)
+# mean_wo_cot = np.mean(wo_cot_activations, axis = 0)
 
-steering_vector = mean_w_cot - mean_wo_cot
+# steering_vector = mean_w_cot - mean_wo_cot
 
 # PARAMETERS
 # question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
@@ -61,20 +61,22 @@ pos = [0, -1] # TODO: Implement multiple position injections
 # print(f"baseline response: \n {baseline}")
 
 # have a test that runs mean mass vs. baseline (which we calculated to be 0.8)
+
+steering_vector = np.load('steering_vector_v1.npy')
 def evaluate_mean_mass(model, tokenizer, dataset, layer, coeff, num_samples=300):
     correct = 0 
     total = 0
     model_answers = []
     answers = []
-    data_split = dataset[50:num_samples]
+    data_split = dataset[0:num_samples]
     
     for i in tqdm(range(len(data_split['question'])), desc="Evaluating"): 
         question = data_split['question'][i]
         answer = data_split['answer'][i].split('####')[1].strip()  # Extract the correct answer
         answers.append(answer)
         
-        # response = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=42)
-        response = generate_baseline_response(model, tokenizer, question, seed=42)
+        response = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=42)
+        #response = generate_baseline_response(model, tokenizer, question, seed=42)
         
         extracted_answer = find_answer(response)
         model_answers.append(extracted_answer)
