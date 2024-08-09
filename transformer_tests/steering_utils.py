@@ -1,6 +1,8 @@
 import torch
 from transformers import LlamaForCausalLM, GPT2LMHeadModel
 import numpy as np
+import os
+import json
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 sampling_kwargs = dict(temperature=1.0, top_p=0.3)
@@ -165,7 +167,7 @@ def add_steering_vectors_hook_batch(steering_vector, coeff, pos):
         return output
     return hook
 
-def generate_steered_responses_batch(model, tokenizer, layer, questions, steering_vector, coeff, pos, seed=None, batch_size=16):
+def generate_steered_responses_batch(model, tokenizer, layer, questions, steering_vector, coeff, pos, batch_size, seed=None):
     if seed is not None: 
         torch.manual_seed(seed)
     
@@ -248,6 +250,22 @@ def generate_response(model, inputs, **kwargs):
         )
     return output
 
+def write_to_json(json_path, responses):
+    if os.path.exists(json_path):
+        # File exists, load existing data
+        with open(json_path, 'r') as f:
+            existing_data = json.load(f)
+        # Append new responses
+        existing_data.extend(responses)
+    else:
+        # File doesn't exist, use new responses
+        existing_data = responses
+
+    # Write updated data back to file
+    with open(json_path, 'w') as f:
+        json.dump(existing_data, f, indent=2)
+    
+    
 def generate_steered_response(model, tokenizer, question, layer, coeff):
     # Generate steered vector
     steering_vector = get_steering_vector(model, tokenizer, layer, coeff)
