@@ -4,6 +4,9 @@ Generalized Reasoning Research - Training Sparse Autoencoders in Pursuit of Gene
 # Install Dependencies
 pip install transformers openai datasets scikit-learn bitsandbytes
 
+# Install Big Bench
+pip install "bigbench @ https://storage.googleapis.com/public_research_data/bigbench/bigbench-0.0.1.tar.gz"
+
 # Authenticate with HuggingFace
 huggingface-cli login
 

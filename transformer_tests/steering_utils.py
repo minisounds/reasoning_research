@@ -30,7 +30,7 @@ def get_contrasted_pooled_activations(model, tokenizer, layer, question, seed=No
     
     hook = model.model.layers[layer].register_forward_hook(extract_activation)
     
-    w_cot = w_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{eight_shot}Q: {question}\nA:<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
+    w_cot = w_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
     wo_cot = wo_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
     
     cot_input_ids = tokenizer(w_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
@@ -177,7 +177,7 @@ def generate_steered_responses_batch(model, tokenizer, layer, questions, steerin
     for i in range(0, len(questions), batch_size):
         batch_questions = questions[i:i+batch_size]
         
-        full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n\n{eight_shot}Q: {q}\nA:<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in batch_questions]
+        full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in batch_questions]
         
         inputs = tokenizer(
             full_prompts,
@@ -214,7 +214,8 @@ def generate_baseline_responses_batch(model, tokenizer, questions, seed=None, ba
     
     for i in range(0, len(questions), batch_size):
         batch_questions = questions[i:i+batch_size]
-        full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n\n{eight_shot}Q: {q}\nA:<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in batch_questions]
+        
+        full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in batch_questions]
         
         inputs = tokenizer(
             full_prompts,

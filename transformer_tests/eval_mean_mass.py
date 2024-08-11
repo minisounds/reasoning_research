@@ -11,6 +11,7 @@ import numpy as np
 from steering_utils import get_pooled_activations, generate_steered_response_w_vector, generate_steered_responses_batch, generate_baseline_responses_batch, generate_baseline_response, device, set_seed, write_to_json
 from evaluate_response import find_answer
 from tqdm import tqdm
+import json
 import re
     
 set_seed(42)
@@ -27,12 +28,11 @@ dataset = load_dataset("gsm8k", "main")
 # dataset = load_dataset("maveriq/bigbenchhard", "boolean_expressions")
 
 steering_vector = np.load('steering_vector_v1.npy')
-def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=8):
+def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=16):
     steered_correct = 0
     baseline_correct = 0
     total = 0
     model_steered_answers = []
-    model_baseline_answers = []
     answers = []
     
     data_split = dataset['test']
@@ -46,14 +46,10 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
         
         # Generate responses in batches
         steered_responses = generate_steered_responses_batch(model, tokenizer, layer, questions, steering_vector, coeff, pos, batch_size, seed=42)
-        baseline_responses = generate_baseline_responses_batch(model, tokenizer, questions, seed=42)
         
         # Extract answers from responses
         extracted_steered_answers = [find_answer(response) for response in steered_responses]
         model_steered_answers.extend(extracted_steered_answers)
-        
-        extracted_baseline_answers = [find_answer(response) for response in baseline_responses]
-        model_baseline_answers.extend(extracted_baseline_answers)
         
         # Compare extracted answers with correct answers
         for extracted, answer in zip(extracted_steered_answers, batch_answers):
@@ -61,22 +57,31 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
                 steered_correct += 1
             total += 1
         
-        for extracted, answer in zip(extracted_baseline_answers, batch_answers):
-            if extracted is not None and extracted == answer:     
-                baseline_correct += 1
-        
     steered_accuracy = steered_correct / total
-    baseline_accuracy = baseline_correct / total
     
-    return steered_accuracy, baseline_accuracy, total 
+    return steered_accuracy, total 
 
-layer = 19 
-coeff = 20
-steered_accuracy, baseline_accuracy, total = evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff)
+results = []
+for layer in range(10, 32):
+    for coeff in range(5, 25, 5):
+        steering_vector = np.load(f"steering_vector_layer_{layer}.npy")
+        steered_accuracy, total = evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff)
 
-print(f"Evaluation Results:")
-print(f"Layer: {layer}")
-print(f"Coefficient: {coeff}")
-print(f"Total: {total}")
-print(f"Steered Accuracy: {steered_accuracy}")
-print(f"Baseline Accuracy: {baseline_accuracy}")
+        print(f"Evaluation Results:")
+        print(f"Layer: {layer}")
+        print(f"Coefficient: {coeff}")
+        print(f"Total: {total}")
+        print(f"Steered Accuracy: {steered_accuracy}")
+        print(f"Baseline Accuracy: 78.50%")
+        
+        result = {
+            "layer": layer,
+            "coefficient": coeff,
+            "steered_accuracy": steered_accuracy
+        }
+        result.append(result)
+
+with open('steering_results.json', 'w') as f:
+    json.dump(results, f, indent=2)
+
+print("finished with grid search eval")
