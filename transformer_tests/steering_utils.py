@@ -190,7 +190,7 @@ def generate_steered_responses_batch(model, tokenizer, layer, questions, steerin
         outputs = model.generate(
             input_ids=inputs["input_ids"],
             attention_mask=inputs["attention_mask"],
-            max_new_tokens=250,
+            max_new_tokens=600,
             **sampling_kwargs
         )
     
