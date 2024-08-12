@@ -15,7 +15,7 @@ def find_answer(model_response):
     """
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that extracts numerical answers from text."},
             {"role": "user", "content": prompt}

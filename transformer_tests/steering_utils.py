@@ -171,40 +171,34 @@ def add_steering_vectors_hook_batch(steering_vector, coeff, pos):
 def generate_steered_responses_batch(model, tokenizer, layer, questions, steering_vector, coeff, pos, batch_size, seed=None):
     if seed is not None: 
         torch.manual_seed(seed)
-    
-    all_responses = []
-    
-    for i in range(0, len(questions), batch_size):
-        batch_questions = questions[i:i+batch_size]
         
-        full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in batch_questions]
+    full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in questions]
         
-        inputs = tokenizer(
-            full_prompts,
-            return_tensors="pt",
-            padding=True,
-            truncation=True,
-            max_length=512,
-            return_attention_mask=True
+    inputs = tokenizer(
+        full_prompts,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=512,
+        return_attention_mask=True
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()}
+    
+    handle = model.model.layers[layer].register_forward_hook(add_steering_vectors_hook_batch(steering_vector, coeff, pos))
+    
+    with torch.no_grad():
+        outputs = model.generate(
+            input_ids=inputs["input_ids"],
+            attention_mask=inputs["attention_mask"],
+            max_new_tokens=250,
+            **sampling_kwargs
         )
-        inputs = {k: v.to(device) for k, v in inputs.items()}
-        
-        handle = model.model.layers[layer].register_forward_hook(add_steering_vectors_hook_batch(steering_vector, coeff, pos))
-        
-        with torch.no_grad():
-            outputs = model.generate(
-                input_ids=inputs["input_ids"],
-                attention_mask=inputs["attention_mask"],
-                max_new_tokens=250,
-                **sampling_kwargs
-            )
-        
-        handle.remove()
-        
-        batch_responses = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-        all_responses.extend(batch_responses)
     
-    return all_responses
+    handle.remove()
+    
+    responses = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+
+    return responses
         
 def generate_baseline_responses_batch(model, tokenizer, questions, seed=None, batch_size=16):
     if seed is not None:
