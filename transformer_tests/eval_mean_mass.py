@@ -25,23 +25,20 @@ config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 config.use_cache = False
     
 dataset = load_dataset("gsm8k", "main")
-# dataset = load_dataset("maveriq/bigbenchhard", "boolean_expressions")
 
-steering_vector = np.load('steering_vector_v1.npy')
 def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=16):
     steered_correct = 0
-    baseline_correct = 0
     total = 0
     model_steered_answers = []
     answers = []
     
-    data_split = dataset['test']
-    # data_split = dataset[0:100]
+    # data_split = dataset['test']
+    data_split = dataset['test'][50:300]
     
-    for i in tqdm(range(0, len(data_split['question']), batch_size), desc="Evaluating"): 
-        batch = data_split[i:i+batch_size]
-        questions = batch['question']
-        batch_answers = [answer.split('####')[1].strip() for answer in batch['answer']]
+    for i in tqdm(range(0, len(data_split['question']), batch_size), desc="Evaluating"):
+        # batch = data_split[i:i+batch_size]
+        questions = data_split['question'][i:i+batch_size]
+        batch_answers = [answer.split('####')[1].strip() for answer in data_split['answer'][i:i+batch_size]]
         answers.extend(batch_answers)
         
         # Generate responses in batches
@@ -62,9 +59,9 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
     return steered_accuracy, total 
 
 results = []
-for layer in range(10, 32):
-    for coeff in range(5, 25, 5):
-        steering_vector = np.load(f"steering_vector_layer_{layer}.npy")
+for layer in range(20, 32):
+    for coeff in range(5, 26, 5):
+        steering_vector = np.load(f"steering_vectors/steering_vector_layer_{layer}.npy")
         steered_accuracy, total = evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff)
 
         print(f"Evaluation Results:")
@@ -79,7 +76,7 @@ for layer in range(10, 32):
             "coefficient": coeff,
             "steered_accuracy": steered_accuracy
         }
-        result.append(result)
+        results.append(result)
 
 with open('steering_results.json', 'w') as f:
     json.dump(results, f, indent=2)

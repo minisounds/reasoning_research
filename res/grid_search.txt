@@ -1,0 +1,163 @@
+Results: 
+
+Layer: 14
+Coefficient: 20
+Total: 250
+Steered Accuracy: 0.756
+Baseline Accuracy: 78.50%
+
+Layer: 14
+Coefficient: 25
+Total: 250
+Steered Accuracy: 0.76
+Baseline Accuracy: 78.50%
+
+Layer: 15
+Coefficient: 5
+Total: 250
+Steered Accuracy: 0.756
+Baseline Accuracy: 78.50%
+
+Layer: 15
+Coefficient: 10
+Total: 250
+Steered Accuracy: 0.748
+
+Layer: 15
+Coefficient: 15
+Total: 250
+Steered Accuracy: 0.744
+Baseline Accuracy: 78.50%
+
+Layer: 15
+Coefficient: 20
+Total: 250
+Steered Accuracy: 0.752
+Baseline Accuracy: 78.50%
+
+Layer: 15
+Coefficient: 25
+Total: 250
+Steered Accuracy: 0.76
+Baseline Accuracy: 78.50%
+
+Layer: 16
+Coefficient: 5
+Total: 250
+Steered Accuracy: 0.764
+Baseline Accuracy: 78.50%
+
+Layer: 16
+Coefficient: 10
+Total: 250
+Steered Accuracy: 0.764
+Baseline Accuracy: 78.50%
+
+Evaluation Results:
+Layer: 16
+Coefficient: 15
+Total: 250
+Steered Accuracy: 0.776
+Baseline Accuracy: 78.50%
+
+Layer: 16
+Coefficient: 20
+Total: 250
+Steered Accuracy: 0.792
+Baseline Accuracy: 78.50%
+
+Layer: 16
+Coefficient: 25
+Total: 250
+Steered Accuracy: 0.784
+Baseline Accuracy: 78.50%
+
+Layer: 17
+Coefficient: 5
+Total: 250
+Steered Accuracy: 0.768
+Baseline Accuracy: 78.50%
+
+Layer: 17
+Coefficient: 10
+Total: 250
+Steered Accuracy: 0.764
+Baseline Accuracy: 78.50%
+
+Layer: 17
+Coefficient: 15
+Total: 250
+Steered Accuracy: 0.772
+Baseline Accuracy: 78.50%
+
+Layer: 17
+Coefficient: 20
+Total: 250
+Steered Accuracy: 0.776
+Baseline Accuracy: 78.50%
+
+Layer: 17
+Coefficient: 25
+Total: 250
+Steered Accuracy: 0.784
+Baseline Accuracy: 78.50%
+
+Layer: 18
+Coefficient: 5
+Total: 250
+Steered Accuracy: 0.764
+Baseline Accuracy: 78.50%
+
+Layer: 18
+Coefficient: 10
+Total: 250
+Steered Accuracy: 0.764
+Baseline Accuracy: 78.50%
+
+Layer: 18
+Coefficient: 15
+Total: 250
+Steered Accuracy: 0.764
+Baseline Accuracy: 78.50%
+
+Layer: 18
+Coefficient: 20
+Total: 250
+Steered Accuracy: 0.768
+Baseline Accuracy: 78.50%
+
+Layer: 18
+Coefficient: 25
+Total: 250
+Steered Accuracy: 0.768
+Baseline Accuracy: 78.50%
+
+Layer: 19
+Coefficient: 5
+Total: 250
+Steered Accuracy: 0.764
+Baseline Accuracy: 78.50%
+
+Layer: 19
+Coefficient: 10
+Total: 250
+Steered Accuracy: 0.76
+Baseline Accuracy: 78.50%
+
+Layer: 19
+Coefficient: 15
+Total: 250
+Steered Accuracy: 0.768
+Baseline Accuracy: 78.50%
+
+Layer: 19
+Coefficient: 20
+Total: 250
+Steered Accuracy: 0.78
+Baseline Accuracy: 78.50%
+
+Layer: 19
+Coefficient: 25
+Total: 250
+Steered Accuracy: 0.776
+Baseline Accuracy: 78.50%
