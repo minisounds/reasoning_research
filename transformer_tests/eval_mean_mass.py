@@ -26,7 +26,7 @@ config.use_cache = False
     
 dataset = load_dataset("gsm8k", "main")
 
-def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=16):
+def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=8):
     steered_correct = 0
     total = 0
     model_steered_answers = []
@@ -34,7 +34,7 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
     
     # data_split = dataset['test']
     data_split = dataset['test'][50:300]
-    
+     
     for i in tqdm(range(0, len(data_split['question']), batch_size), desc="Evaluating"):
         # batch = data_split[i:i+batch_size]
         questions = data_split['question'][i:i+batch_size]
