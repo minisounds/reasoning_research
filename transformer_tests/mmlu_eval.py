@@ -34,12 +34,12 @@ ans_map = {
     3: 'D'
 }
 
-def mmlu_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=8):
+def mmlu_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=30):
     steered_correct = 0
     total = 0
     model_steered_answers = []
     answers = []
-     
+      
     for i in tqdm(range(0, len(dataset['question']), batch_size), desc="Evaluating"):
         batch = dataset[i:i+batch_size]
         questions = batch['question']
@@ -65,6 +65,9 @@ def mmlu_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-
             if extracted is not None and extracted == answer:     
                 steered_correct += 1
             total += 1
+        
+        if i == 10:
+            print("hi!")
         
     steered_accuracy = steered_correct / total
     

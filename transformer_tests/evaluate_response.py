@@ -37,7 +37,7 @@ def mmlu_find_answer(model_response):
     """
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that extracts multiple choice answers from text."},
             {"role": "user", "content": prompt}
