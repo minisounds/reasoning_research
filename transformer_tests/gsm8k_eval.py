@@ -12,7 +12,7 @@ from steering_utils import get_pooled_activations, generate_steered_response_w_v
 from evaluate_response import find_answer
 from tqdm import tqdm
 import re
-
+ 
 set_seed(42)
 
 model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")

@@ -9,7 +9,7 @@ from transformers import (
 from datasets import load_dataset
 import numpy as np
 from steering_utils import generate_steered_responses_batch, generate_baseline_responses_batch, generate_baseline_response, device, set_seed
-from evaluate_response import mmlu_find_answer
+from evaluate_response import mmlu_find_answer_llama
 from tqdm import tqdm
 import re
 
@@ -34,7 +34,7 @@ ans_map = {
     3: 'D'
 }
 
-def mmlu_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=30):
+def mmlu_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=16):
     steered_correct = 0
     total = 0
     model_steered_answers = []
@@ -57,7 +57,7 @@ def mmlu_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-
         steered_responses = generate_steered_responses_batch(model, tokenizer, layer, prompts, steering_vector, coeff, pos, batch_size, seed=42)
        
         # Extract answers from responses
-        extracted_steered_answers = [mmlu_find_answer(response) for response in steered_responses]
+        extracted_steered_answers = [mmlu_find_answer_llama(response, model, tokenizer) for response in steered_responses]
         model_steered_answers.extend(extracted_steered_answers)
         
         # Compare extracted answers with correct answers

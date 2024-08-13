@@ -26,7 +26,7 @@ def find_answer(model_response):
     
     return extracted_answer
 
-def mmlu_find_answer(model_response): 
+def mmlu_find_answer_gpt(model_response): 
     prompt = f"""
     You are a precise answer extractor. Given a response to a multiple choice problem, your task is to extract ONLY the final answer choice the model makes (either A, B, C, or D). Do not include any units, explanations, or additional text. If there are multiple answers in the response, identify and return only the final answer. If no clear answer choice is found, return 'None'.
 
@@ -47,6 +47,35 @@ def mmlu_find_answer(model_response):
     extracted_answer = response.choices[0].message.content
     
     return extracted_answer
+
+def mmlu_find_answer_llama(model_response, model, tokenizer):
+    prompt = f"""You are a precise answer extractor. Given a response to a multiple choice problem, your task is to extract ONLY the final answer choice the model makes (either A, B, C, or D). Do not include any units, explanations, or additional text. If there are multiple answers in the response, identify and return only the final answer. If no clear answer choice is found, return 'None'.
+
+    Response to analyze:
+    {model_response}
+
+    Extract the final answer choice from the above response. Your output should be ONLY the final multiple choice answer picked in the response (either A, B, C, or D), or None if no clear answer choice is found."""
+
+    input_ids = tokenizer.encode(prompt, return_tensors="pt").to(device)
+    
+    with torch.no_grad():
+        output = model.generate(
+            input_ids,
+            max_new_tokens=10,
+            num_return_sequences=1,
+            temperature=0.7,
+            top_p=0.95,
+            do_sample=True,
+        )
+    
+    extracted_answer = tokenizer.decode(output[0], skip_special_tokens=True).strip()
+    
+    # Extract only the last word (which should be the answer)
+    extracted_answer = extracted_answer.split()[-1]
+    
+    # Ensure the answer is either A, B, C, D, or None
+    valid_answers = {'A', 'B', 'C', 'D', 'None'}
+    return extracted_answer if extracted_answer in valid_answers else 'None'
 
 # print(find_answer("user\nJames decides to run 3 sprints 3 times a week.  He runs 60 meters each sprint.  How many total meters does he run a week?assistant\n\nJames runs 3 sprints a day. Each sprint is 60 meters. So each day he runs 3 x 60 = 180 meters. He does this 7 days a week. So he runs 7 x 180 = 1260 meters. The answer is 1260."))
 
