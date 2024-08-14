@@ -25,7 +25,7 @@ config.use_cache = False
 
 dataset = load_dataset("gsm8k", "main")
 
-def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=8):
+def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=32):
     correct = 0 
     total = 0
     model_answers = []
@@ -41,9 +41,8 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
         answers.extend(batch_answers)
 
         # Generate responses in batches
-        responses = generate_steered_responses_batch(model, tokenizer, layer, questions, steering_vector, coeff, pos, batch_size, seed=42)
-        # responses = generate_baseline_responses_batch(model, tokenizer, questions, seed=42)
-        # response = generate_baseline_response(model, tokenizer, question, seed=42)
+        # responses = generate_steered_responses_batch(model, tokenizer, layer, questions, steering_vector, coeff, pos, batch_size, seed=42)
+        responses = generate_baseline_responses_batch(model, tokenizer, questions, batch_size, seed=42)
 
         # Extract answers from responses
         extracted_answers = [find_answer(response) for response in responses]

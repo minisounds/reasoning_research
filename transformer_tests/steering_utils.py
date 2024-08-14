@@ -208,7 +208,7 @@ def generate_baseline_responses_batch(model, tokenizer, questions, batch_size, s
     for i in range(0, len(questions), batch_size):
         batch_questions = questions[i:i+batch_size]
         
-        full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in batch_questions]
+        full_prompts = [f"<|start_header_id|>user<|end_header_id|>Answer the following question thinking step by step: \n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in batch_questions]
         
         inputs = tokenizer(
             full_prompts,
@@ -224,7 +224,7 @@ def generate_baseline_responses_batch(model, tokenizer, questions, batch_size, s
             outputs = model.generate(
                 input_ids=inputs["input_ids"],
                 attention_mask=inputs["attention_mask"],
-                max_new_tokens=250,
+                max_new_tokens=700,
                 **sampling_kwargs
             )
         
