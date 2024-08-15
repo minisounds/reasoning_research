@@ -9,7 +9,7 @@ from transformers import (
 from datasets import load_dataset
 import numpy as np
 from steering_utils import generate_steered_responses_batch, generate_baseline_responses_batch, generate_baseline_response, device, set_seed
-from evaluate_response import mmlu_find_answer_llama
+from evaluate_response import mmlu_find_answer_gpt
 from tqdm import tqdm
 import re
 
@@ -24,8 +24,8 @@ config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 config.use_cache = False
 
 mmlu_data = load_dataset("cais/mmlu", "all")
-mmlu_test = mmlu_data['test'].shuffle(seed=42)
-print("hello")
+mmlu_test = mmlu_data['test'].shuffle(seed=42)[:1000]
+
 
 ans_map = {
     0: 'A',
@@ -34,17 +34,19 @@ ans_map = {
     3: 'D'
 }
 
-def mmlu_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=16):
+def mmlu_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=30):
     steered_correct = 0
+    # baseline_correct = 0
     total = 0
     model_steered_answers = []
+    # model_baseline_answers = []
     answers = []
       
     for i in tqdm(range(0, len(dataset['question']), batch_size), desc="Evaluating"):
-        batch = dataset[i:i+batch_size]
-        questions = batch['question']
-        choices = batch['choices']
-        batch_answers = [ans_map[ans_index] for ans_index in batch['answer']]
+        # batch = dataset[i:i+batch_size]
+        questions = dataset['question'][i:i+batch_size]
+        choices = dataset['choices'][i:i+batch_size]
+        batch_answers = [ans_map[ans_index] for ans_index in dataset['answer'][i:i+batch_size]]
         answers.extend(batch_answers)
         
         prompts = []
@@ -55,26 +57,34 @@ def mmlu_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-
         
         # Generate responses in batches
         steered_responses = generate_steered_responses_batch(model, tokenizer, layer, prompts, steering_vector, coeff, pos, batch_size, seed=42)
+        # baseline_responses = generate_baseline_responses_batch(model, tokenizer, prompts, batch_size, seed=42)
        
         # Extract answers from responses
-        extracted_steered_answers = [mmlu_find_answer_llama(response, model, tokenizer) for response in steered_responses]
+        extracted_steered_answers = [mmlu_find_answer_gpt(response) for response in steered_responses]
         model_steered_answers.extend(extracted_steered_answers)
+        
+        # extracted_baseline_answers = [mmlu_find_answer_gpt(response) for response in baseline_responses]
+        # model_baseline_answers.extend(extracted_baseline_answers)
         
         # Compare extracted answers with correct answers
         for extracted, answer in zip(extracted_steered_answers, batch_answers):
             if extracted is not None and extracted == answer:     
                 steered_correct += 1
             total += 1
+            
+        # for extracted, answer in zip(extracted_baseline_answers, batch_answers):
+        #     if extracted is not None and extracted == answer:     
+        #         baseline_correct += 1 
+        #     total += 1
         
-        if i == 10:
-            print("hi!")
         
     steered_accuracy = steered_correct / total
+    # baseline_accuracy = baseline_correct / total
     
     return steered_accuracy, total 
 
 layer = 16
-coeff = 25
+coeff = 20
 steering_vector = np.load(f"steering_vectors/steering_vector_layer_{layer}.npy")
 
 steered_accuracy, total = mmlu_eval(model, tokenizer, mmlu_test, steering_vector, layer, coeff)
@@ -84,3 +94,4 @@ print(f"Layer: {layer}")
 print(f"Coefficient: {coeff}")
 print(f"Total: {total}")
 print(f"Steered Accuracy: {steered_accuracy}")
+# print(f"Baseline Accuracy: {baseline_accuracy}")
