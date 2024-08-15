@@ -24,7 +24,7 @@ config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 config.use_cache = False
 
 mmlu_data = load_dataset("cais/mmlu", "all")
-mmlu_test = mmlu_data['test']
+mmlu_test = mmlu_data['test'].shuffle(seed=42)
 print("hello")
 
 ans_map = {
