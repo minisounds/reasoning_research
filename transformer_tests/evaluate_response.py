@@ -6,7 +6,7 @@ client = OpenAI()
 
 def find_answer(model_response): 
     prompt = f"""
-    You are a precise answer extractor. Given a response to a test problem, your task is to extract ONLY the final numerical answer. Do not include any units, explanations, or additional text. If there are multiple numbers in the response, identify and return only the final answer. If no clear numerical answer is found, return -1758.
+    You are a precise answer extractor. Given a response to a test problem (which includes the test problem in the beginning), your task is to extract ONLY the final numerical answer. Do not include any units, explanations, or additional text. DO NOT SOLVE THE PROBLEM YOURSELF. If there are multiple numbers in the response, identify and return only the final answer. If no clear numerical answer is found, return -1758.
 
     Response to analyze:
     {model_response}
@@ -15,7 +15,7 @@ def find_answer(model_response):
     """
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that extracts numerical answers from text."},
             {"role": "user", "content": prompt}

@@ -52,27 +52,31 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
         
         extracted_baseline_answers = [find_answer(response) for response in baseline_responses]
         model_baseline_answers.extend(extracted_baseline_answers)
-
+        
+        print("checkpoint")
         # Compare extracted answers with correct answers
         for extracted_steered, extracted_baseline, steered_response, baseline_response, question, answer in zip(extracted_steered_answers, extracted_baseline_answers, steered_responses, baseline_responses, questions, batch_answers):
-            if extracted_steered is not None and extracted_baseline is not None and extracted_steered == answer and extracted_baseline != answer:     
+            if extracted_steered is not None and extracted_baseline != '-1758' and extracted_steered == answer and extracted_baseline != answer:     
                 logs.append({
                     "question": question, 
                     "steered_answer": extracted_steered,
                     "baseline_answer": extracted_baseline,
                     "steered response": steered_response,
-                    "baseline response": baseline_response
+                    "baseline response": baseline_response,
+                    "actual answer": answer
                 })
                 if len(logs) == 10: 
                     print(logs)
-    
     return logs 
-
 
 layer = 16
 coeff = 20
 steering_vector = np.load(f'steering_vectors/steering_vector_layer_{layer}.npy')
 log_final = evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff)
+
+questions = "'userAnswer the following question thinking step by step: \nHarry slept 9 hours last night. His friend James slept only 2/3 of what Harry slept. How many more hours did Harry sleep than James?assistant'"
+answer = find_answer(questions)
+print('answer found')
 
 print(log_final)
 print(f"Evaluation Results:")

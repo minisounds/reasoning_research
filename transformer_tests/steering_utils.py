@@ -171,7 +171,7 @@ def generate_steered_responses_batch(model, tokenizer, layer, questions, steerin
     if seed is not None: 
         torch.manual_seed(seed)
         
-    full_prompts = [f"<|start_header_id|>user<|end_header_id|>Answer the following question thinking step by step: \n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in questions]
+    full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in questions]
         
     inputs = tokenizer(
         full_prompts,
@@ -198,40 +198,45 @@ def generate_steered_responses_batch(model, tokenizer, layer, questions, steerin
     responses = tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
     return responses
-        
+
+def parse_message(text):
+    start = text.find("assistant") - 1
+    
+    # Extract the user message
+    user_message = text[start:].strip()
+    
+    return user_message
+
 def generate_baseline_responses_batch(model, tokenizer, questions, batch_size, seed=None):
     if seed is not None:
         torch.manual_seed(seed)
     
-    all_responses = []
+    full_prompts = [f"<|start_header_id|>user<|end_header_id|>\nAnswer the following question thinking step by step: \n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in questions]
     
-    for i in range(0, len(questions), batch_size):
-        batch_questions = questions[i:i+batch_size]
+    inputs = tokenizer(
+        full_prompts,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=512,
+        return_attention_mask=True
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()}
         
-        full_prompts = [f"<|start_header_id|>user<|end_header_id|>Answer the following question thinking step by step: \n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in batch_questions]
-        
-        inputs = tokenizer(
-            full_prompts,
-            return_tensors="pt",
-            padding=True,
-            truncation=True,
-            max_length=512,
-            return_attention_mask=True
+    with torch.no_grad():
+        outputs = model.generate(
+            input_ids=inputs["input_ids"],
+            attention_mask=inputs["attention_mask"],
+            max_new_tokens=700,
+            **sampling_kwargs
         )
-        inputs = {k: v.to(device) for k, v in inputs.items()}
-        
-        with torch.no_grad():
-            outputs = model.generate(
-                input_ids=inputs["input_ids"],
-                attention_mask=inputs["attention_mask"],
-                max_new_tokens=700,
-                **sampling_kwargs
-            )
-        
-        batch_responses = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-        all_responses.extend(batch_responses)
     
-    return all_responses
+    responses = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+    final_responses = []
+    for response in responses: 
+        final_responses.append(parse_message(response))
+        
+    return final_responses
 
 
 def generate_response(model, inputs, **kwargs):
@@ -290,7 +295,7 @@ def generate_baseline_response(model, tokenizer, question, seed=None):
     if seed is not None: 
         torch.manual_seed(seed)
         
-    full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+    full_prompt = f"<|start_header_id|>user<|end_header_id|>Answer the following question thinking step by step: \n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
     inputs = tokenizer(
         full_prompt, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True
     )
