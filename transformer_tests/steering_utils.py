@@ -7,8 +7,10 @@ import json
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 sampling_kwargs = dict(temperature=1.0, top_p=0.3)
 
+# Llama3 8b System Prompt
 w_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are a helpful AI Assistant who answers questions step by step.<|eot_id|>"
 wo_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are an AI Assistant who answers questions immediately without elaboration.<|eot_id|>"
+
 
 # Set seeds for reproducibility
 def set_seed(seed):
@@ -62,12 +64,14 @@ def get_pooled_activations(model, tokenizer, layer, question, seed=None):
     
     hook = model.model.layers[layer].register_forward_hook(extract_activation)
     
-    w_cot = w_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
-    w_cot_input_ids = tokenizer(w_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+    # w_cot = w_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
+    w_cot = f"<s>[INST]Answer the following question thinking step by step: \n\n {question} [/INST]"
+    w_cot_input_ids = tokenizer(w_cot, return_tensors="pt", padding=True, truncation=True, max_length=700, return_attention_mask=True)
     w_cot_input_ids.to(device)
 
-    wo_cot = wo_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
-    wo_cot_input_ids = tokenizer(wo_cot, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True)
+    # wo_cot = wo_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
+    wo_cot = f"<s>[INST]Answer the following question immediately, without any elaboration: \n\n {question} [/INST]"
+    wo_cot_input_ids = tokenizer(wo_cot, return_tensors="pt", padding=True, truncation=True, max_length=700, return_attention_mask=True)
     wo_cot_input_ids.to(device)
     
     with torch.no_grad():
@@ -200,7 +204,7 @@ def generate_steered_responses_batch(model, tokenizer, layer, questions, steerin
     return responses
 
 def parse_message(text):
-    start = text.find("assistant") - 1
+    start = text.find("[\\INST]") + 7
     
     # Extract the user message
     user_message = text[start:].strip()
@@ -210,9 +214,10 @@ def parse_message(text):
 def generate_baseline_responses_batch(model, tokenizer, questions, batch_size, seed=None):
     if seed is not None:
         torch.manual_seed(seed)
-    # \nAnswer the following question thinking step by step: 
-    full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in questions]
     
+    # \nAnswer the following question thinking step by step: 
+    # full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in questions]
+    full_prompts = [f"[INST]{q}[\INST]" for q in questions]
     inputs = tokenizer(
         full_prompts,
         return_tensors="pt",
@@ -228,12 +233,13 @@ def generate_baseline_responses_batch(model, tokenizer, questions, batch_size, s
             input_ids=inputs["input_ids"],
             attention_mask=inputs["attention_mask"],
             max_new_tokens=700,
+            do_sample=True,
             **sampling_kwargs
         )
     
     responses = tokenizer.batch_decode(outputs, skip_special_tokens=True)
     final_responses = []
-    for response in responses: 
+    for response in responses:
         final_responses.append(parse_message(response))
         
     return final_responses
@@ -272,7 +278,7 @@ def generate_steered_response(model, tokenizer, question, layer, coeff):
     
     full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
     
-    inputs = tokenizer(
+    inputs = tokenizer( 
         full_prompt,
         return_tensors="pt",
         return_attention_mask=True

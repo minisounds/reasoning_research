@@ -8,13 +8,15 @@ from evaluate_response import find_answer
 
 # MODEL & TOKENIZER & SEED SET UP: 
 set_seed(42)
-model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+# model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
 model = model.to(device)  # Move model to GPU
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+# tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.pad_token_id = tokenizer.eos_token_id
-config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
-config.use_cache = False
+# config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+# config.use_cache = False
 
 # HELPER FUNC:
 def get_mean_mass_steering_vector(w_cot_activations, wo_cot_activations): 
@@ -40,6 +42,7 @@ def process_data(layer):
         questions = bblite_data.take(3)
         # questions = bblite_data['train']['inputs'][:3]
         for q in questions: 
+            # TODO: Make sure get_pooled_activations() works
             w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, q['inputs'], seed=42)
             # w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, q, seed=42)
             w_cot_activations.append(w_cot_vector)

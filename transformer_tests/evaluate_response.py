@@ -55,7 +55,7 @@ def modeLing_find_answer(model_response):
 
 def mmlu_find_answer_gpt(model_response): 
     prompt = f"""
-    You are a precise answer extractor. Given a response to a multiple choice problem, your task is to extract ONLY the final answer choice the model makes (either A, B, C, or D). Do not include any units, explanations, or additional text. If there are multiple answers in the response, identify and return only the final answer. If no clear answer choice is found, return 'None'.
+    You are a precise answer extractor. Given a response to a multiple choice problem, your task is to extract ONLY the final answer choice the model makes (either A, B, C, or D). Do not include any units, explanations, or additional text. DO NOT SOLVE THE QUESTION AND PROVIDE THE ANSWER YOURSELF. If there are multiple answers in the response, identify and return only the final answer. If no clear answer choice is found, return 'None'.
 
     Response to analyze:
     {model_response}

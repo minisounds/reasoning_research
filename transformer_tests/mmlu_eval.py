@@ -15,13 +15,16 @@ import re
 
 set_seed(42)
 
-model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+# model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
 model = model.to(device)  # Move model to GPU
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+# tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.pad_token_id = tokenizer.eos_token_id
-config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
-config.use_cache = False
+# config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+# config.use_cache = False
+
 
 mmlu_data = load_dataset("cais/mmlu", "all")
 mmlu_test = mmlu_data['test'].shuffle(seed=42)[:1000]
@@ -76,7 +79,6 @@ def mmlu_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-
             if extracted is not None and extracted == answer:     
                 baseline_correct += 1 
             total += 1
-        
         
     # steered_accuracy = steered_correct / total
     baseline_accuracy = baseline_correct / total

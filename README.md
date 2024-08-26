@@ -22,5 +22,3 @@ git lfs pull
 
 # Run Finetune Command
 python finetune_llama.py --data_path "data/processed_gsm8k_dataset.json" --model_name "meta-llama/Meta-Llama-3-8B-Instruct" --batch_size 1 --learning_rate 0.00005 --num_epochs 3 --warmup_steps 100
-
-
