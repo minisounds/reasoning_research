@@ -28,11 +28,11 @@ tokenizer.pad_token_id = tokenizer.eos_token_id
 dataset = load_dataset("gsm8k", "main")
 
 def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=16):
-    #steered_correct = 0 
+    # steered_correct = 0 
     baseline_correct = 0 
     total = 0
     answers = []
-    #model_steered_answers = []
+    # model_steered_answers = []
     model_baseline_answers = []
 
     data_split = dataset['test']
@@ -44,7 +44,7 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
         answers.extend(batch_answers)
 
         # Generate responses in batches
-        #steered_responses = generate_steered_responses_batch(model, tokenizer, layer, questions, steering_vector, coeff, pos, batch_size, seed=42)
+        # steered_responses = generate_steered_responses_batch(model, tokenizer, layer, questions, steering_vector, coeff, pos, batch_size, seed=42)
         baseline_responses = generate_baseline_responses_batch(model, tokenizer, questions, batch_size, seed=42)
 
         # Extract answers from responses
@@ -62,14 +62,14 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
     baseline_accuracy = baseline_correct / total
     return baseline_accuracy, total
 
-layer = 16
-coeff = 50
-steering_vector = np.load(f'steering_vectors/steering_vector_layer_{layer}.npy')
+layer = 25
+coeff = 15
+steering_vector = np.load(f'steering_vectors/steering_vectors_mistral/steering_vector_layer_{layer}.npy')
 baseline_accuracy, total = evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff)
 
 print(f"Evaluation Results:")
 print(f"Layer: {layer}")
 print(f"Coefficient: {coeff}")
-print(f"Correct: {correct}")
+# print(f"Correct: {correct}")
 print(f"Total: {total}")
 print(f"Accuracy: {baseline_accuracy:.2%}")
