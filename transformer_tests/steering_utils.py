@@ -3,6 +3,7 @@ from transformers import LlamaForCausalLM, GPT2LMHeadModel
 import numpy as np
 import os
 import json
+from contextlib import ExitStack
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 sampling_kwargs = dict(temperature=1.0, top_p=0.3)
@@ -62,6 +63,9 @@ def get_pooled_activations(model, tokenizer, layer, question, seed=None):
             output[0].detach()
         )
     
+    # with ExitStack() as stack:
+    #     stack.enter_context(model.model.layers[layer].register_forward_hook(extract_activation))
+    
     hook = model.model.layers[layer].register_forward_hook(extract_activation)
     
     # w_cot = w_cot_prompt+f"\n<|start_header_id|>user<|end_header_id|>\n\n{question}<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>"
@@ -78,7 +82,7 @@ def get_pooled_activations(model, tokenizer, layer, question, seed=None):
         _ = model(**w_cot_input_ids)
         _ = model(**wo_cot_input_ids)
     
-    hook.remove()
+    hook.remove() # use context manager
     
     # pool activations for equal activations
     pool_w_cot = average_pooling(activations[0])
@@ -143,7 +147,7 @@ def add_steering_vectors_hook(steering_vector, coeff, pos):
 def generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=None):
     if seed is not None: 
         torch.manual_seed(seed)
-    full_prompt = f"<|start_header_id|>user<|end_header_id|>\n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+    full_prompt = f"<s>[INST]\n{question}[\INST]"
     
     inputs = tokenizer(
         full_prompt,
@@ -301,7 +305,7 @@ def generate_baseline_response(model, tokenizer, question, seed=None):
     if seed is not None: 
         torch.manual_seed(seed)
         
-    full_prompt = f"<|start_header_id|>user<|end_header_id|>Answer the following question thinking step by step: \n{question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+    full_prompt = f"<s>[INST]\n{question}[\INST]"
     inputs = tokenizer(
         full_prompt, return_tensors="pt", padding=True, truncation=True, max_length=512, return_attention_mask=True
     )

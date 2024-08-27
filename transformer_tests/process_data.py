@@ -3,7 +3,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaConfig, Llama
 from datasets import load_dataset
 from tqdm import tqdm
 import numpy as np
-from steering_utils import get_pooled_activations, generate_baseline_response, device, set_seed
+from steering_utils import get_pooled_activations, generate_baseline_response, generate_steered_response_w_vector, device, set_seed
 from evaluate_response import find_answer
 
 # MODEL & TOKENIZER & SEED SET UP: 
@@ -40,9 +40,9 @@ def process_data(layer):
         # bblite_data = load_dataset("bigbench", config, trust_remote_code=True)
         bblite_data = load_dataset("bigbench", config, split="train", streaming=True, trust_remote_code=True)
         questions = bblite_data.take(3)
+        # print(torch.cuda.is_available())
         # questions = bblite_data['train']['inputs'][:3]
         for q in questions: 
-            # TODO: Make sure get_pooled_activations() works
             w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, q['inputs'], seed=42)
             # w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, q, seed=42)
             w_cot_activations.append(w_cot_vector)
@@ -82,12 +82,21 @@ def process_data(layer):
     
     return w_cot_activations, wo_cot_activations
 
-for layer in range(10, 32): 
+for layer in range(11,32): 
     w_cot_activations, wo_cot_activations = process_data(layer)
     # CREATE STEERING VECTOR 
     steering_vector = get_mean_mass_steering_vector(w_cot_activations, wo_cot_activations)
     # SAVE STEERING VECTOR 
-    np.save(f"steering_vector_layer_{layer}.npy", steering_vector) 
+    np.save(f"steering_vectors/steering_vectors_mistral/steering_vector_layer_{layer}.npy", steering_vector) 
+    # testing out if it works or not
+    # question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
+    # coeff = 30
+    # pos = [0,-1]
+    # baseline_reply = generate_baseline_response(model, tokenizer, question, seed=42)
+    # example_reply = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=42)
+    # print(f"baseline_reply: {baseline_reply}")
+    # print(f"steered_reply: {example_reply}")
+    
     print("steering vector process completed")
 
-print
+print("everything done")
