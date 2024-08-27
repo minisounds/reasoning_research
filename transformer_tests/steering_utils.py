@@ -175,11 +175,19 @@ def add_steering_vectors_hook_batch(steering_vector, coeff, pos):
         return output
     return hook
 
+def parse_message(text):
+    start = text.find("[\\INST]") + 7
+    
+    # Extract the user message
+    user_message = text[start:].strip()
+    
+    return user_message
+
 def generate_steered_responses_batch(model, tokenizer, layer, questions, steering_vector, coeff, pos, batch_size, seed=None):
     if seed is not None: 
         torch.manual_seed(seed)
         
-    full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in questions]
+    full_prompts = [f"<s>[INST]\n{q}[\INST]" for q in questions]
         
     inputs = tokenizer(
         full_prompts,
@@ -198,22 +206,20 @@ def generate_steered_responses_batch(model, tokenizer, layer, questions, steerin
             input_ids=inputs["input_ids"],
             attention_mask=inputs["attention_mask"],
             max_new_tokens=700,
+            do_sample=True,
             **sampling_kwargs
         )
     
     handle.remove()
     
     responses = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-
-    return responses
-
-def parse_message(text):
-    start = text.find("[\\INST]") + 7
     
-    # Extract the user message
-    user_message = text[start:].strip()
-    
-    return user_message
+    final_responses = []
+    for response in responses:
+        final_responses.append(parse_message(response))
+
+    return final_responses
+
 
 def generate_baseline_responses_batch(model, tokenizer, questions, batch_size, seed=None):
     if seed is not None:

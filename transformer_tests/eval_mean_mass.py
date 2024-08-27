@@ -16,27 +16,27 @@ import re
     
 set_seed(42)
 
-model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+# model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
 model = model.to(device)  # Move model to GPU
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+# tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.pad_token_id = tokenizer.eos_token_id
-config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
-config.use_cache = False
+# config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+# config.use_cache = False
     
 dataset = load_dataset("gsm8k", "main")
 
-def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=8):
+def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=20):
     steered_correct = 0
     total = 0
     model_steered_answers = []
     answers = []
     
-    # data_split = dataset['test']
-    data_split = dataset['test'][50:300]
+    data_split = dataset['test'][:150]
      
     for i in tqdm(range(0, len(data_split['question']), batch_size), desc="Evaluating"):
-        # batch = data_split[i:i+batch_size]
         questions = data_split['question'][i:i+batch_size]
         batch_answers = [answer.split('####')[1].strip() for answer in data_split['answer'][i:i+batch_size]]
         answers.extend(batch_answers)
@@ -59,9 +59,9 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
     return steered_accuracy, total 
 
 results = []
-for layer in range(20, 32):
+for layer in range(25, 31):
     for coeff in range(5, 26, 5):
-        steering_vector = np.load(f"steering_vectors/steering_vector_layer_{layer}.npy")
+        steering_vector = np.load(f"steering_vectors/steering_vectors_mistral/steering_vector_layer_{layer}.npy")
         steered_accuracy, total = evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff)
 
         print(f"Evaluation Results:")
@@ -69,7 +69,6 @@ for layer in range(20, 32):
         print(f"Coefficient: {coeff}")
         print(f"Total: {total}")
         print(f"Steered Accuracy: {steered_accuracy}")
-        print(f"Baseline Accuracy: 78.50%")
         
         result = {
             "layer": layer,
