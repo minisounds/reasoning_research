@@ -28,11 +28,11 @@ arc_data = load_dataset("allenai/ai2_arc", "ARC-Challenge")
 arc_test = arc_data['test']
 
 def arc_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=16):
-    # steered_correct = 0
-    baseline_correct = 0
+    steered_correct = 0
+    # baseline_correct = 0
     total = 0
-    # model_steered_answers = []
-    model_baseline_answers = []
+    model_steered_answers = []
+    # model_baseline_answers = []
     answers = []
 
     for i in tqdm(range(0, len(dataset['question']), batch_size), desc="Evaluating"):
@@ -49,31 +49,31 @@ def arc_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1
             prompts.append(prompt)
 
         # Generate responses in batches
-        # steered_responses = generate_steered_responses_batch(model, tokenizer, layer, prompts, steering_vector, coeff, pos, batch_size, seed=42)
-        baseline_responses = generate_baseline_responses_batch(model, tokenizer, prompts, batch_size, seed=42)
+        steered_responses = generate_steered_responses_batch(model, tokenizer, layer, prompts, steering_vector, coeff, pos, batch_size, seed=42)
+        # baseline_responses = generate_baseline_responses_batch(model, tokenizer, prompts, batch_size, seed=42)
 
         # Extract answers from responses
-        # extracted_steered_answers = [mmlu_find_answer_gpt(response) for response in steered_responses]
-        # model_steered_answers.extend(extracted_steered_answers)
-        extracted_baseline_answers = [mmlu_find_answer_gpt(response) for response in baseline_responses]
-        model_baseline_answers.extend(extracted_baseline_answers)
+        extracted_steered_answers = [mmlu_find_answer_gpt(response) for response in steered_responses]
+        model_steered_answers.extend(extracted_steered_answers)
+        # extracted_baseline_answers = [mmlu_find_answer_gpt(response) for response in baseline_responses]
+        # model_baseline_answers.extend(extracted_baseline_answers)
 
 
         # Compare extracted answers with correct answers
-        # for extracted, answer in zip(extracted_steered_answers, batch_answers):
-        #     if extracted is not None and extracted == answer:     
-        #         steered_correct += 1
-        #     total += 1
-
-        for extracted, answer in zip(extracted_baseline_answers, batch_answers):
+        for extracted, answer in zip(extracted_steered_answers, batch_answers):
             if extracted is not None and extracted == answer:     
-                baseline_correct += 1
+                steered_correct += 1
             total += 1
 
-    # steered_accuracy = steered_correct / total
-    baseline_accuracy = baseline_correct / total
+        # for extracted, answer in zip(extracted_baseline_answers, batch_answers):
+        #     if extracted is not None and extracted == answer:     
+        #         baseline_correct += 1
+        #     total += 1
 
-    return baseline_accuracy, total 
+    steered_accuracy = steered_correct / total
+    # baseline_accuracy = baseline_correct / total
+
+    return steered_accuracy, total 
 
 layer = 16
 coeff = 20
@@ -85,5 +85,5 @@ print(f"Evaluation Results:")
 print(f"Layer: {layer}")
 print(f"Coefficient: {coeff}")
 print(f"Total: {total}")
-# print(f"Steered Accuracy: {steered_accuracy}")
-print(f"Baseline Accuracy: {baseline_accuracy}")
+print(f"Steered Accuracy: {steered_accuracy}")
+# print(f"Baseline Accuracy: {baseline_accuracy}")

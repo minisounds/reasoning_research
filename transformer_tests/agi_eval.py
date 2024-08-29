@@ -72,13 +72,13 @@ def agi_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1
         #         baseline_correct += 1
         #     total += 1
             
-    steered_accuracy = steered_correct / total
+    steered_accuracy = steered_correct / total 
     # baseline_accuracy = baseline_correct / total
     
     return steered_accuracy, total 
 
-layer = 13
-coeff = 20
+layer = 14
+coeff = 10
 steering_vector = np.load(f"steering_vectors/steering_vectors_mistral/steering_vector_layer_{layer}.npy")
 
 steered_accuracy, total = agi_eval(model, tokenizer, agi_eval_data, steering_vector, layer, coeff)
@@ -87,5 +87,5 @@ print(f"Evaluation Results:")
 print(f"Layer: {layer}")
 print(f"Coefficient: {coeff}")
 print(f"Total: {total}")
-print(f"Steered Accuracy: {steered_accuracy}")
+difprint(f"Steered Accuracy: {steered_accuracy}")
 # print(f"Baseline Accuracy: {baseline_accuracy}")
