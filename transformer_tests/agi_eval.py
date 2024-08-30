@@ -31,7 +31,7 @@ with open("benchmarks/AGI_Eval.jsonl", "r") as f:
     for line in f:
         agi_eval_data.append(json.loads(line.strip()))
 
-def agi_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=16):
+def agi_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[-1], batch_size=16):
     steered_correct = 0
     # baseline_correct = 0
     total = 0
@@ -72,7 +72,7 @@ def agi_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1
         #         baseline_correct += 1
         #     total += 1
             
-    steered_accuracy = steered_correct / total 
+    steered_accuracy = steered_correct / total
     # baseline_accuracy = baseline_correct / total
     
     return steered_accuracy, total 
@@ -87,5 +87,5 @@ print(f"Evaluation Results:")
 print(f"Layer: {layer}")
 print(f"Coefficient: {coeff}")
 print(f"Total: {total}")
-difprint(f"Steered Accuracy: {steered_accuracy}")
+print(f"Steered Accuracy: {steered_accuracy}")
 # print(f"Baseline Accuracy: {baseline_accuracy}")

@@ -75,9 +75,9 @@ def arc_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1
 
     return steered_accuracy, total 
 
-layer = 16
+layer = 13
 coeff = 20
-steering_vector = np.load(f"steering_vectors/steering_vector_layer_{layer}.npy")
+steering_vector = np.load(f"steering_vectors/steering_vectors_mistral/steering_vector_layer_{layer}.npy")
 
 steered_accuracy, total = arc_eval(model, tokenizer, arc_test, steering_vector, layer, coeff)
 # TODO: Do the same for Baseline
