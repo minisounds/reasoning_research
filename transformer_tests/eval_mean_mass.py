@@ -34,7 +34,7 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
     model_steered_answers = []
     answers = []
     
-    data_split = dataset['test'][:150]
+    data_split = dataset['test'][:70]
      
     for i in tqdm(range(0, len(data_split['question']), batch_size), desc="Evaluating"):
         questions = data_split['question'][i:i+batch_size]
@@ -59,8 +59,8 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
     return steered_accuracy, total 
 
 results = []
-for layer in range(25, 31):
-    for coeff in range(5, 26, 5):
+for layer in range(6,10):
+    for coeff in range(1, 4):
         steering_vector = np.load(f"steering_vectors/steering_vectors_mistral/steering_vector_layer_{layer}.npy")
         steered_accuracy, total = evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff)
 

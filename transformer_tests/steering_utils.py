@@ -147,7 +147,7 @@ def add_steering_vectors_hook(steering_vector, coeff, pos):
 def generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=None):
     if seed is not None: 
         torch.manual_seed(seed)
-    full_prompt = f"<s>[INST]\n{question}[\INST]"
+    full_prompt = f"<s>[INST]Answer the following question and make sure to pick your answer choice in your explanation. \n{question}[\INST]"
     
     inputs = tokenizer(
         full_prompt,

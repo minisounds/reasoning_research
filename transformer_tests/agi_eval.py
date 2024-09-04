@@ -78,7 +78,7 @@ def agi_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[-1],
     return steered_accuracy, total 
 
 layer = 13
-coeff = 3
+coeff = 1
 steering_vector = np.load(f"steering_vectors/steering_vectors_mistral/steering_vector_layer_{layer}.npy")
 
 steered_accuracy, total = agi_eval(model, tokenizer, agi_eval_data, steering_vector, layer, coeff)
