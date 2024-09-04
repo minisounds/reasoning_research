@@ -138,7 +138,7 @@ def get_activations(model, tokenizer, layer, coeff, question):
 def add_steering_vectors_hook(steering_vector, coeff, pos):
     steering_vector = torch.tensor(steering_vector).to(device)
     def hook(model, input, output):
-        if output[0].shape[1] > 2:
+        if output[0].shape[1] < 2:
             for p in pos: 
                 output[0][:, p, :] += coeff*steering_vector # add to the last seq
         return output[0], output[1]
@@ -169,7 +169,7 @@ def generate_steered_response_w_vector(model, tokenizer, layer, question, steeri
 def add_steering_vectors_hook_batch(steering_vector, coeff, pos):
     steering_vector = torch.tensor(steering_vector).to(device)
     def hook(model, input, output):
-        if output[0].shape[1] > 2:
+        if output[0].shape[1] < 2:
             for p in pos:
                 output[0][:, p, :] += coeff * steering_vector  # Add batch dimension
         return output
