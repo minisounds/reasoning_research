@@ -56,13 +56,13 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
         
         for extracted, answer in zip(extracted_steered_answers, batch_answers):
             if extracted is not None and extracted == answer:     
-                baseline_correct += 1
+                steered_correct += 1
             total += 1
     
-    baseline_accuracy = baseline_correct / total
-    return baseline_accuracy, total
+    steered_accuracy = steered_correct / total
+    return steered_accuracy, total
 
-layer = 13
+layer = 19
 coeff = 1
 steering_vector = np.load(f'steering_vectors/steering_vectors_mistral/steering_vector_layer_{layer}.npy')
 steered_accuracy, total = evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff)
