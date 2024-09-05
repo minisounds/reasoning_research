@@ -1,0 +1,77 @@
+[
+  {
+    "layer": 20,
+    "coefficient": 0.5,
+    "steered_accuracy": 0.6
+  },
+  {
+    "layer": 20,
+    "coefficient": 1.0,
+    "steered_accuracy": 0.5571428571428572
+  },
+  {
+    "layer": 20,
+    "coefficient": 1.5,
+    "steered_accuracy": 0.5428571428571428
+  },
+  {
+    "layer": 21,
+    "coefficient": 0.5,
+    "steered_accuracy": 0.6
+  },
+  {
+    "layer": 21,
+    "coefficient": 1.0,
+    "steered_accuracy": 0.5
+  },
+  {
+    "layer": 21,
+    "coefficient": 1.5,
+    "steered_accuracy": 0.4714285714285714
+  },
+  {
+    "layer": 22,
+    "coefficient": 0.5,
+    "steered_accuracy": 0.5571428571428572
+  },
+  {
+    "layer": 22,
+    "coefficient": 1.0,
+    "steered_accuracy": 0.5142857142857142
+  },
+  {
+    "layer": 22,
+    "coefficient": 1.5,
+    "steered_accuracy": 0.45714285714285713
+  },
+  {
+    "layer": 23,
+    "coefficient": 0.5,
+    "steered_accuracy": 0.5428571428571428
+  },
+  {
+    "layer": 23,
+    "coefficient": 1.0,
+    "steered_accuracy": 0.5285714285714286
+  },
+  {
+    "layer": 23,
+    "coefficient": 1.5,
+    "steered_accuracy": 0.5285714285714286
+  },
+  {
+    "layer": 24,
+    "coefficient": 0.5,
+    "steered_accuracy": 0.5428571428571428
+  },
+  {
+    "layer": 24,
+    "coefficient": 1.0,
+    "steered_accuracy": 0.5428571428571428
+  },
+  {
+    "layer": 24,
+    "coefficient": 1.5,
+    "steered_accuracy": 0.5285714285714286
+  }
+]
