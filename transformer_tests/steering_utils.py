@@ -227,7 +227,7 @@ def generate_baseline_responses_batch(model, tokenizer, questions, batch_size, s
     
     # \nAnswer the following question thinking step by step: 
     # full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in questions]
-    full_prompts = [f"[INST]Answer the following question thinking step by step: \n {q}[\INST]" for q in questions]
+    full_prompts = [f"[INST]\n {q}[\INST]" for q in questions]
     inputs = tokenizer(
         full_prompts,
         return_tensors="pt",
