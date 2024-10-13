@@ -187,7 +187,8 @@ def generate_steered_responses_batch(model, tokenizer, layer, questions, steerin
     if seed is not None: 
         torch.manual_seed(seed)
         
-    full_prompts = [f"<s>[INST]\n{q}[\INST]" for q in questions]
+    # full_prompts = [f"<s>[INST]\n{q}[\INST]" for q in questions]
+    full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in questions]
         
     inputs = tokenizer(
         full_prompts,
