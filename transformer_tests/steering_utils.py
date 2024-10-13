@@ -169,14 +169,15 @@ def generate_steered_response_w_vector(model, tokenizer, layer, question, steeri
 def add_steering_vectors_hook_batch(steering_vector, coeff, pos):
     steering_vector = torch.tensor(steering_vector).to(device)
     def hook(model, input, output):
-        if output[0].shape[1] < 2:
+        if output[0].shape[1] > 2:
             for p in pos:
                 output[0][:, p, :] += coeff * steering_vector  # Add batch dimension
         return output
     return hook
 
 def parse_message(text):
-    start = text.find("[\\INST]") + 7
+    # start = text.find("[\\INST]") + 7
+    start = text.find("assistant\n\n") + len("assistant\n\n")
     
     # Extract the user message
     user_message = text[start:].strip()
@@ -227,8 +228,8 @@ def generate_baseline_responses_batch(model, tokenizer, questions, batch_size, s
         torch.manual_seed(seed)
     
     # \nAnswer the following question thinking step by step: 
-    # full_prompts = [f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in questions]
-    full_prompts = [f"[INST]\n {q}[\INST]" for q in questions]
+    full_prompts = [f"<|start_header_id|>user<|end_header_id|>\nAnswer the following question thinking step by step\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>" for q in questions]
+    # full_prompts = [f"[INST]\n {q}[\INST]" for q in questions]
     inputs = tokenizer(
         full_prompts,
         return_tensors="pt",
