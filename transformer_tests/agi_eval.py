@@ -52,7 +52,7 @@ def agi_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0, -
             prompts.append(prompt)
         
         # Generate responses in batches
-        steered_responses = generate_steered_responses_batch(model, tokenizer, layer, prompts, steering_vector, coeff, pos, batch_size, seed=43)
+        steered_responses = generate_steered_responses_batch(model, tokenizer, layer, prompts, steering_vector, coeff, pos, batch_size, seed=42)
         baseline_responses = generate_baseline_responses_batch(model, tokenizer, prompts, batch_size, seed=43)
        
         # Extract answers from responses

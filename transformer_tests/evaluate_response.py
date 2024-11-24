@@ -29,33 +29,6 @@ def find_answer(model_response):
     
     return extracted_answer
 
-
-def modeLing_find_answer(model_response): 
-    prompt = f"""
-    You are a precise translation extractor. Given a response to a linguistics task where a model has translated phrases between a low-resource language and English, your task is to extract ONLY the translations provided by the model assistant. Do not include any explanations or additional text.
-
-    Response to analyze:
-    {model_response}
-
-    Extract all translations from the above response, but don't include the source phrase the translation was derived from. Your output should be a list of translations, each on a new line, in the format:
-    Target Language: Target Phrase
-
-    If no translations are found, return 'No translations found'.
-    """
-
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant that extracts numerical answers from text."},
-            {"role": "user", "content": prompt}
-        ]
-    )
-
-    extracted_answer = response.choices[0].message.content
-    
-    return extracted_answer
-
-
 def mmlu_find_answer_gpt(model_response): 
     prompt = f"""
     You are a precise answer extractor. Given a response to a multiple choice problem, your task is to extract ONLY the final answer choice the model makes (either A, B, C, or D). Do not include any units, explanations, or additional text. DO NOT SOLVE THE QUESTION AND PROVIDE THE ANSWER YOURSELF. If there are multiple answers in the response, identify and return only the final answer. If no clear answer choice is found, return 'None'.
