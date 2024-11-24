@@ -1,8 +1,11 @@
 import os
 from openai import OpenAI
+
 api_key = os.environ.get('OPENAI_API_KEY')
 
 client = OpenAI()
+
+print(f"cur api key here: {api_key}")
 
 def find_answer(model_response): 
     prompt = f"""

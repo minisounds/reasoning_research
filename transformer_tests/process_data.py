@@ -7,7 +7,7 @@ from steering_utils import get_pooled_activations, generate_baseline_response, g
 from evaluate_response import find_answer
 
 # MODEL & TOKENIZER & SEED SET UP: 
-set_seed(42)
+set_seed(43)
 # model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
 model = model.to(device)  # Move model to GPU
@@ -43,8 +43,8 @@ def process_data(layer):
         # print(torch.cuda.is_available())
         # questions = bblite_data['train']['inputs'][:3]
         for q in questions: 
-            w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, q['inputs'], seed=42)
-            # w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, q, seed=42)
+            w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, q['inputs'], seed=43)
+            # w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, q, seed=43)
             w_cot_activations.append(w_cot_vector)
             wo_cot_activations.append(wo_cot_vector)
 
@@ -55,7 +55,7 @@ def process_data(layer):
     for i in tqdm(range(len(mmlu_data['dev'])), desc="Evaluating MMLU"):
         # iterate twice, then add 3 to index
         if count < 2: 
-            w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, mmlu_data['dev']['question'][i], seed=42)
+            w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, mmlu_data['dev']['question'][i], seed=43)
             w_cot_activations.append(w_cot_vector)
             wo_cot_activations.append(wo_cot_vector)
             count += 1
@@ -68,13 +68,13 @@ def process_data(layer):
     # GSM8K - Pull First 100 Examples from Training (Easy), Then Medium (4,500 until 4,600)
     gsm8k_data = load_dataset("gsm8k", "main", split="train")
     for i in tqdm(range(4500, 4600), desc="Evaluating GSM8K: Easy"):
-        w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, gsm8k_data['question'][i], seed=42)
+        w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, gsm8k_data['question'][i], seed=43)
         w_cot_activations.append(w_cot_vector)
         wo_cot_activations.append(wo_cot_vector)
 
     # Medium Level GSM8K Questions
     for i in tqdm(range(4500, 4600), desc="Evaluating GSM8K: Medium"):
-        w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, gsm8k_data['question'][i], seed=42)
+        w_cot_vector, wo_cot_vector = get_pooled_activations(model, tokenizer, layer, gsm8k_data['question'][i], seed=43)
         w_cot_activations.append(w_cot_vector)
         wo_cot_activations.append(wo_cot_vector)
 
@@ -92,8 +92,8 @@ for layer in range(11,32):
     # question = "Three friends, Alice, Bob, and Charlie, are sitting in a row. Alice is not sitting next to Bob. Bob is sitting to the right of Charlie. Who is sitting in the middle?"
     # coeff = 30
     # pos = [0,-1]
-    # baseline_reply = generate_baseline_response(model, tokenizer, question, seed=42)
-    # example_reply = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=42)
+    # baseline_reply = generate_baseline_response(model, tokenizer, question, seed=43)
+    # example_reply = generate_steered_response_w_vector(model, tokenizer, layer, question, steering_vector, coeff, pos, seed=43)
     # print(f"baseline_reply: {baseline_reply}")
     # print(f"steered_reply: {example_reply}")
     

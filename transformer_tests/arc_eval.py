@@ -12,7 +12,7 @@ from evaluate_response import mmlu_find_answer_gpt
 from tqdm import tqdm
 import re
 
-set_seed(42)
+set_seed(43)
 
 # model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
@@ -27,7 +27,7 @@ tokenizer.pad_token_id = tokenizer.eos_token_id
 arc_data = load_dataset("allenai/ai2_arc", "ARC-Challenge")
 arc_test = arc_data['test']
 
-def arc_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=16):
+def arc_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0, -1], batch_size=16):
     steered_correct = 0
     # baseline_correct = 0
     total = 0
@@ -49,8 +49,8 @@ def arc_eval(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1
             prompts.append(prompt)
 
         # Generate responses in batches
-        steered_responses = generate_steered_responses_batch(model, tokenizer, layer, prompts, steering_vector, coeff, pos, batch_size, seed=42)
-        # baseline_responses = generate_baseline_responses_batch(model, tokenizer, prompts, batch_size, seed=42)
+        steered_responses = generate_steered_responses_batch(model, tokenizer, layer, prompts, steering_vector, coeff, pos, batch_size, seed=43)
+        # baseline_responses = generate_baseline_responses_batch(model, tokenizer, prompts, batch_size, seed=43)
 
         # Extract answers from responses
         extracted_steered_answers = [mmlu_find_answer_gpt(response) for response in steered_responses]

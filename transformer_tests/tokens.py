@@ -12,7 +12,7 @@ from steering_utils import generate_steered_responses_batch, generate_baseline_r
 from tqdm import tqdm
 import re
  
-set_seed(42)
+set_seed(43)
 
 model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 # model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
@@ -40,8 +40,8 @@ def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff,
         answers.extend(batch_answers)
 
         # Generate responses in batches
-        steered_responses = generate_steered_responses_batch(model, tokenizer, layer, questions, steering_vector, coeff, pos, batch_size, seed=42)
-        baseline_responses = generate_baseline_responses_batch(model, tokenizer, questions, batch_size, seed=42)
+        steered_responses = generate_steered_responses_batch(model, tokenizer, layer, questions, steering_vector, coeff, pos, batch_size, seed=43)
+        baseline_responses = generate_baseline_responses_batch(model, tokenizer, questions, batch_size, seed=43)
 
         # Extract answers from responses
         for steered_response, baseline_response in zip(steered_responses, baseline_responses):
