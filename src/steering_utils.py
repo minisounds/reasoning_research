@@ -8,10 +8,6 @@ from contextlib import ExitStack
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 sampling_kwargs = dict(temperature=1.0, top_p=0.3)
 
-# Llama3 8b System Prompt
-w_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are a helpful AI Assistant who answers questions step by step.<|eot_id|>"
-wo_cot_prompt = "<|start_header_id|>system<|end_header_id|>\nYou are an AI Assistant who answers questions immediately without elaboration.<|eot_id|>"
-
 # System Setup Functions: Setup Seed and Model and Tokenizer
 def set_seed(seed):
     """
@@ -38,7 +34,7 @@ def setup_model_and_tokenizer(model_name, seed, device):
     """
     set_seed(seed)
     model = AutoModelForCausalLM.from_pretrained(model_name)
-    model = model.to(device)  # Move model to the specified device (GPU or CPU)
+    model = model.to(device) 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.pad_token_id = tokenizer.eos_token_id
