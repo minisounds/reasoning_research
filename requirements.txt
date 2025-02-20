@@ -7,7 +7,7 @@ pip install "bigbench @ https://storage.googleapis.com/public_research_data/bigb
 ## Authenticate with HuggingFace
 huggingface-cli login
 
-### User Identification for 
+### User Identification for Pushing
 git config --global user.email "jzscuba@gmail.com"
 git config --global user.name "Jason"
 

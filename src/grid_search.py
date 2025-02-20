@@ -8,8 +8,8 @@ from transformers import (
 )
 from datasets import load_dataset
 import numpy as np
-from steering_utils import get_pooled_activations, generate_steered_response_w_vector, generate_steered_responses_batch, generate_baseline_responses_batch, generate_baseline_response, device, set_seed, write_to_json
-from evaluate_response import find_answer
+from steering_utils import generate_steered_responses_batch, generate_baseline_responses_batch, device, set_seed, write_to_json
+from src.answer_extractor import find_answer
 from tqdm import tqdm
 import json
 import re
@@ -25,7 +25,8 @@ tokenizer.pad_token = tokenizer.eos_token
 tokenizer.pad_token_id = tokenizer.eos_token_id
 # config = LlamaConfig.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 # config.use_cache = False
-    
+
+# Grid Search for Best Parameter Combinations - GSM8k
 dataset = load_dataset("gsm8k", "main")
 
 def evaluate_mean_mass(model, tokenizer, dataset, steering_vector, layer, coeff, pos=[0,-1], batch_size=20):
